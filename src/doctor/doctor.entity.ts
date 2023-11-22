@@ -19,7 +19,7 @@ export class Doctor {
   })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   fullname: string;
 
   @Column()
@@ -28,31 +28,31 @@ export class Doctor {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   sex: string;
 
-  @Column()
+  @Column({ nullable: true })
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
 
-  @Column()
+  @Column({ nullable: true })
   workplace: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   cv: string;
 
-  @Column({ name: 'fee_per_hour' })
+  @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
 
   @CreateDateColumn({ name: 'created_at' })

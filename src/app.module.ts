@@ -1,18 +1,19 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientModule } from './client/client.module';
-import { DoctorModule } from './doctor/doctor.module';
-import { AppointmentModule } from './appointment/appointment.module';
-import { ReviewModule } from './review/review.module';
-import { DoctorAvailableTimeModule } from './doctor-available-time/doctor-available-time.module';
-import { FavoriteModule } from './favorite/favorite.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Appointment } from './appointment/appointment.entity';
-import { Doctor } from './doctor/doctor.entity';
+import { AppointmentModule } from './appointment/appointment.module';
+import { AuthModule } from './auth/auth.module';
 import { Client } from './client/client.entity';
+import { ClientModule } from './client/client.module';
 import { DoctorAvailableTime } from './doctor-available-time/doctor-available-time.entity';
+import { DoctorAvailableTimeModule } from './doctor-available-time/doctor-available-time.module';
+import { Doctor } from './doctor/doctor.entity';
+import { DoctorModule } from './doctor/doctor.module';
 import { Favorite } from './favorite/favorite.entity';
+import { FavoriteModule } from './favorite/favorite.module';
 import { Review } from './review/review.entity';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { Review } from './review/review.entity';
     ReviewModule,
     DoctorAvailableTimeModule,
     FavoriteModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

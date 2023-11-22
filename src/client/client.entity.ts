@@ -16,28 +16,28 @@ export class Client {
   })
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   fullname: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   sex: string;
 
-  @Column()
+  @Column({ nullable: true })
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
 
   @CreateDateColumn({ name: 'created_at' })

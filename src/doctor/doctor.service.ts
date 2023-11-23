@@ -42,15 +42,34 @@ export class DoctorService {
   }
 
   async getListDoctors(findDoctor: FindDoctor) {
-    const { email, fullname } = findDoctor;
-    const builder = this.doctorRepository.createQueryBuilder('doctor');
+    const { email, fullname, city, endTime, startTime } = findDoctor;
+    const builder = this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect(
+        'doctor.doctor_available_time',
+        'doctor_available_time',
+      );
     if (email) {
       builder.where('doctor.email ilike :email', { email: `%${email}%` });
     }
     if (fullname) {
-      builder.where('doctor.fullname ilike :email', {
+      builder.andWhere('doctor.fullname ilike :email', {
         fullname: `%${fullname}%`,
       });
+    }
+    if (city) {
+      builder.andWhere('doctor.city ilike :city', {
+        city: `%${city}%`,
+      });
+    }
+    if (startTime && endTime) {
+      builder.andWhere(
+        'doctor_available_time.start_time >= :startTime AND doctor_available_time.end_time <= :endTime',
+        {
+          startTime,
+          endTime,
+        },
+      );
     }
     return builder.getMany();
   }

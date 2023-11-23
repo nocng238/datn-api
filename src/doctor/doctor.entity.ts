@@ -52,6 +52,9 @@ export class Doctor {
   @Column({ nullable: true })
   cv: string;
 
+  @Column({ nullable: true })
+  city: string;
+
   @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
 

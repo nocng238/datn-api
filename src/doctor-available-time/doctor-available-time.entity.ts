@@ -1,11 +1,9 @@
-import { Appointment } from 'src/appointment/appointment.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,

@@ -16,6 +16,10 @@ export class DoctorRegisterDto {
   @IsNotEmpty()
   phone: string;
 
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+
   @IsOptional()
   workplace?: string;
 }

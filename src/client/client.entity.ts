@@ -37,7 +37,11 @@ export class Client {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
+  @Column({
+    nullable: true,
+    default:
+      'https://res.cloudinary.com/dizvl6kwh/image/upload/v1700844526/petcare/default-avatar_vurwzr.jpg',
+  })
   avatar: string;
 
   @CreateDateColumn({ name: 'created_at' })

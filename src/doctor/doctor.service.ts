@@ -42,35 +42,29 @@ export class DoctorService {
   }
 
   async getListDoctors(findDoctor: FindDoctor) {
-    const { email, fullname, city, endTime, startTime } = findDoctor;
-    const builder = this.doctorRepository
-      .createQueryBuilder('doctor')
-      .leftJoinAndSelect(
-        'doctor.doctor_available_time',
-        'doctor_available_time',
-      );
-    if (email) {
-      builder.where('doctor.email ilike :email', { email: `%${email}%` });
+    const { search, address, endTime, startTime } = findDoctor;
+    const builder = this.doctorRepository.createQueryBuilder('doctor');
+    if (search) {
+      builder
+        .where('doctor.email ilike :email', { email: `%${search}%` })
+        .orWhere('doctor.fullname ilike :fullname', {
+          fullname: `%${search}%`,
+        });
     }
-    if (fullname) {
-      builder.andWhere('doctor.fullname ilike :email', {
-        fullname: `%${fullname}%`,
+    if (address) {
+      builder.andWhere('doctor.address ilike :address', {
+        address: `%${address}%`,
       });
     }
-    if (city) {
-      builder.andWhere('doctor.city ilike :city', {
-        city: `%${city}%`,
-      });
-    }
-    if (startTime && endTime) {
-      builder.andWhere(
-        'doctor_available_time.start_time >= :startTime AND doctor_available_time.end_time <= :endTime',
-        {
-          startTime,
-          endTime,
-        },
-      );
-    }
+    // if (startTime && endTime) {
+    //   builder.andWhere(
+    //     'doctor_available_time.start_time >= :startTime AND doctor_available_time.end_time <= :endTime',
+    //     {
+    //       startTime,
+    //       endTime,
+    //     },
+    //   );
+    // }
     return builder.getMany();
   }
 }

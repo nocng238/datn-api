@@ -1,5 +1,7 @@
 import { Appointment } from 'src/appointment/appointment.entity';
+import { CreditCard } from 'src/credit-card/credit-card.entity';
 import { Favorite } from 'src/favorite/favorite.entity';
+import { StatusEnum } from 'src/shared';
 import {
   Column,
   CreateDateColumn,
@@ -31,7 +33,7 @@ export class Client {
   @Column({ nullable: true })
   sex: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.NOT_VERIFY })
   status: string;
 
   @Column({ nullable: true })
@@ -51,4 +53,22 @@ export class Client {
 
   @OneToMany(() => Favorite, (favorite) => favorite.client)
   favorites: Favorite[];
+
+  @OneToMany(() => CreditCard, (creditCard) => creditCard.client)
+  creditCards: CreditCard[];
+
+  @Column({ name: 'is_doctor', default: false })
+  isDoctor: boolean;
+
+  @Column({ name: 'register_verifying_token', nullable: true })
+  registerVerifyingToken: string;
+
+  @Column({ name: 'reset_password_code', nullable: true })
+  resetPasswordCode: string;
+
+  @Column({ name: 'reset_password_code_expiry', nullable: true })
+  resetPasswordCodeExpiry: Date;
+
+  @Column({ name: 'sent_email_verify_at', type: 'timestamptz', nullable: true })
+  sentEmailVerifyAt: Date;
 }

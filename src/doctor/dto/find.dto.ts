@@ -3,5 +3,5 @@ export class FindDoctor {
   fullname?: string;
   startTime?: Date;
   endTime?: Date;
-  city?: string;
+  address?: string;
 }

@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
+import { EmailModule } from 'src/email/email.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -21,6 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
         },
       }),
     }),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [JwtStrategy, AuthService],

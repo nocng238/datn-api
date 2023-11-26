@@ -18,4 +18,7 @@ export class DoctorRegisterDto {
 
   @IsOptional()
   workplace?: string;
+
+  @IsOptional()
+  address?: string;
 }

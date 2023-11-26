@@ -6,14 +6,19 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { AuthModule } from './auth/auth.module';
 import { Client } from './client/client.entity';
 import { ClientModule } from './client/client.module';
+import { CreditCard } from './credit-card/credit-card.entity';
+import { CreditCardModule } from './credit-card/credit-card.module';
 import { DoctorAvailableTime } from './doctor-available-time/doctor-available-time.entity';
 import { DoctorAvailableTimeModule } from './doctor-available-time/doctor-available-time.module';
 import { Doctor } from './doctor/doctor.entity';
 import { DoctorModule } from './doctor/doctor.module';
+import { EmailModule } from './email/email.module';
 import { Favorite } from './favorite/favorite.entity';
 import { FavoriteModule } from './favorite/favorite.module';
 import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
+import { SeedModule } from './seed/seed.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -34,6 +39,7 @@ import { ReviewModule } from './review/review.module';
             DoctorAvailableTime,
             Favorite,
             Review,
+            CreditCard,
           ],
           synchronize: true,
           url: `postgres://${configService.get(
@@ -44,6 +50,7 @@ import { ReviewModule } from './review/review.module';
             'DB_DATABASE',
           )}`,
           keepConnectionAlive: true,
+          logging: true,
         };
       },
     }),
@@ -54,6 +61,10 @@ import { ReviewModule } from './review/review.module';
     DoctorAvailableTimeModule,
     FavoriteModule,
     AuthModule,
+    UserModule,
+    SeedModule,
+    CreditCardModule,
+    EmailModule,
   ],
 })
 export class AppModule {}

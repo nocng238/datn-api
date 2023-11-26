@@ -47,6 +47,9 @@ export class Appointment {
   })
   doctor: Doctor;
 
+  @Column({ name: 'doctor_id' })
+  doctorId: string;
+
   @ManyToOne(() => Client, (client) => client.appointments, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
@@ -57,10 +60,19 @@ export class Appointment {
   })
   client: Client;
 
+  @Column({ name: 'client_id' })
+  clientId: string;
+
   @OneToOne(() => Review, (review) => review.appointment)
   @JoinColumn({
     name: 'review_id',
     foreignKeyConstraintName: 'appointment_review_foreign_key',
   })
   review: Review;
+
+  @Column({ name: 'review_id' })
+  reviewId: string;
+
+  @Column({ nullable: true })
+  note: string;
 }

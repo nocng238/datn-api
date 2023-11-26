@@ -14,4 +14,7 @@ export class ClientRegisterDto {
 
   @IsOptional()
   phone?: string;
+
+  @IsOptional()
+  address?: string;
 }

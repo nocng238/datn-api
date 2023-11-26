@@ -1,54 +1,25 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { Client } from 'src/client/client.entity';
-import { Repository } from 'typeorm';
+import { Appointment } from 'src/appointment/appointment.entity';
+import { Brackets, Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
-import { DoctorRegisterDto } from './dto/doctor-register.dto';
 import { FindDoctor } from './dto/find.dto';
+import { UpdateDoctorDto } from './dto/update.dto';
 
 @Injectable()
 export class DoctorService {
   constructor(
-    @InjectRepository(Client)
-    private clientRepository: Repository<Client>,
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
+    @InjectRepository(Appointment)
+    private appoinmentRepository: Repository<Appointment>,
   ) {}
 
-  async register(registerDto: DoctorRegisterDto): Promise<Doctor> {
-    const salt = await bcrypt.genSalt();
-    const { password } = registerDto;
-    let { email } = registerDto;
-    const hashedPassword = await bcrypt.hash(password, salt);
-    email = email.trim();
-    let user: Client | Doctor = null;
-    const client = await this.clientRepository.findOneBy({ email });
-    const doctor = await this.doctorRepository.findOneBy({ email });
-    if (client) {
-      user = client;
-    } else if (doctor) {
-      user = doctor;
-    }
-    if (user) {
-      throw new ConflictException('Email elready exists');
-    }
-    const createdDoctor = this.doctorRepository.create({
-      ...registerDto,
-      email,
-      password: hashedPassword,
-    });
-    return this.doctorRepository.save(createdDoctor);
-  }
-
   async getListDoctors(findDoctor: FindDoctor) {
-    const { email, fullname, city, endTime, startTime } = findDoctor;
+    const { email, fullname, address, endTime, startTime } = findDoctor;
     const builder = this.doctorRepository
       .createQueryBuilder('doctor')
-      .leftJoinAndSelect(
-        'doctor.doctor_available_time',
-        'doctor_available_time',
-      );
+      .leftJoinAndSelect('doctor.appointments', 'appointments');
     if (email) {
       builder.where('doctor.email ilike :email', { email: `%${email}%` });
     }
@@ -57,20 +28,44 @@ export class DoctorService {
         fullname: `%${fullname}%`,
       });
     }
-    if (city) {
-      builder.andWhere('doctor.city ilike :city', {
-        city: `%${city}%`,
+    if (address) {
+      builder.andWhere('doctor.address ilike :address', {
+        address: `%${address}%`,
       });
     }
+
+    const doctors = await builder.getMany();
+    const appointments = doctors.map((doctor) => {
+      return this.appoinmentRepository.findBy({ doctor });
+    });
+    // .flat(1);
     if (startTime && endTime) {
+      // startTime always <= endTime no need to handle not happy case
       builder.andWhere(
-        'doctor_available_time.start_time >= :startTime AND doctor_available_time.end_time <= :endTime',
-        {
-          startTime,
-          endTime,
-        },
+        new Brackets((qb) => {
+          qb.where(
+            'appointments.start_time <= :startTime AND appointments.end_time <= :startTime',
+            {
+              startTime,
+            },
+          ).orWhere(
+            'appointments.start_time >= :endTime AND appointments.end_time <= :endTime',
+            {
+              endTime,
+            },
+          );
+        }),
       );
     }
     return builder.getMany();
+  }
+
+  async update(id: string, updateDoctorDto: UpdateDoctorDto) {
+    const doctor = await this.doctorRepository.findOneBy({ id });
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+    await this.doctorRepository.update({ id }, updateDoctorDto);
+    return { id, ...updateDoctorDto };
   }
 }

@@ -1,6 +1,7 @@
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -22,20 +23,29 @@ export class Favorite {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Doctor, (doctor) => doctor.appointments, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'doctor_id' })
-  doctor: Doctor;
-
-  @ManyToOne(() => Client, (client) => client.appointments, {
+  @ManyToOne(() => Doctor, (doctor) => doctor.favorites, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
   @JoinColumn({
     name: 'doctor_id',
+    foreignKeyConstraintName: 'favorite_doctor_foreign_key',
+  })
+  doctor: Doctor;
+
+  @Column({ name: 'doctor_id' })
+  doctorId: string;
+
+  @ManyToOne(() => Client, (client) => client.favorites, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'client_id',
     foreignKeyConstraintName: 'favorite_client_foreign_key',
   })
   client: Client;
+
+  @Column({ name: 'client_id' })
+  clientId: string;
 }

@@ -1,6 +1,7 @@
 import { Appointment } from 'src/appointment/appointment.entity';
 import { DoctorAvailableTime } from 'src/doctor-available-time/doctor-available-time.entity';
 import { Favorite } from 'src/favorite/favorite.entity';
+import { StatusEnum } from 'src/shared';
 import {
   Column,
   CreateDateColumn,
@@ -34,7 +35,7 @@ export class Doctor {
   @Column({ nullable: true })
   sex: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.NOT_VERIFY })
   status: string;
 
   @Column({ nullable: true })
@@ -51,9 +52,6 @@ export class Doctor {
 
   @Column({ nullable: true })
   cv: string;
-
-  @Column({ nullable: true })
-  city: string;
 
   @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
@@ -79,4 +77,19 @@ export class Doctor {
 
   @OneToMany(() => Favorite, (favorite) => favorite.doctor)
   favorites: Favorite[];
+
+  @Column({ name: 'is_doctor', default: true })
+  isDoctor: boolean;
+
+  @Column({ name: 'register_verifying_token', nullable: true })
+  registerVerifyingToken: string;
+
+  @Column({ name: 'reset_password_code', nullable: true })
+  resetPasswordCode: string;
+
+  @Column({ name: 'reset_password_code_expiry', nullable: true })
+  resetPasswordCodeExpiry: Date;
+
+  @Column({ name: 'sent_email_verify_at', type: 'timestamptz', nullable: true })
+  sentEmailVerifyAt: Date;
 }

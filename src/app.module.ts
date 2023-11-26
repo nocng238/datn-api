@@ -42,13 +42,13 @@ import { UserModule } from './user/user.module';
             CreditCard,
           ],
           synchronize: true,
-          url: `postgres://${configService.get(
-            'DB_USERNAME',
-          )}:${configService.get('DB_PASSWORD')}@${configService.get(
-            'DB_HOST',
-          )}:${configService.get('DB_PORT')}/${configService.get(
-            'DB_DATABASE',
-          )}`,
+          url: `${
+            configService.get('DB_URL') || 'postgres'
+          }://${configService.get('DB_USERNAME')}:${configService.get(
+            'DB_PASSWORD',
+          )}@${configService.get('DB_HOST')}:${configService.get(
+            'DB_PORT',
+          )}/${configService.get('DB_DATABASE')}`,
           keepConnectionAlive: true,
           logging: true,
         };

@@ -16,17 +16,14 @@ export class DoctorService {
   ) {}
 
   async getListDoctors(findDoctor: FindDoctor) {
-    const { email, fullname, address, endTime, startTime } = findDoctor;
-    const builder = this.doctorRepository
-      .createQueryBuilder('doctor')
-      .leftJoinAndSelect('doctor.appointments', 'appointments');
-    if (email) {
-      builder.where('doctor.email ilike :email', { email: `%${email}%` });
-    }
-    if (fullname) {
-      builder.andWhere('doctor.fullname ilike :email', {
-        fullname: `%${fullname}%`,
-      });
+    const { search, address, endTime, startTime } = findDoctor;
+    const builder = this.doctorRepository.createQueryBuilder('doctor');
+    if (search) {
+      builder
+        .where('doctor.email ilike :email', { email: `%${search}%` })
+        .orWhere('doctor.fullname ilike :fullname', {
+          fullname: `%${search}%`,
+        });
     }
     if (address) {
       builder.andWhere('doctor.address ilike :address', {

@@ -47,6 +47,7 @@ export class SeedService implements OnModuleInit {
       email: 'doctor1@email.com',
       password: hashedPassword,
       phone: '123456789',
+      address: 'da nnag',
     };
     const doctor2Dto = {
       status: StatusEnum.VERIFY,
@@ -54,6 +55,7 @@ export class SeedService implements OnModuleInit {
       email: 'doctor2@email.com',
       password: hashedPassword,
       phone: '123456789',
+      address: 'da nnag',
     };
     await this.saveClientIfNotExisting([client1Dto, client2Dto]);
     await this.saveDoctorIfNotExisting([doctor1Dto, doctor2Dto]);

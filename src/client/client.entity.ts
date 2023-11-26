@@ -6,7 +6,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,6 +40,15 @@ export class Client {
 
   @Column({ nullable: true })
   phone: string;
+
+  // @OneToOne(() => CreditCard, (creditCard) => creditCard.client)
+  // @JoinColumn({
+  //   name: 'credit_card_id',
+  //   foreignKeyConstraintName: 'credit_card_foreign_key',
+  // })
+  // creditCard: CreditCard
+  @Column({ nullable: true })
+  credit_card_id: string;
 
   @Column({
     nullable: true,

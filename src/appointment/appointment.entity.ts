@@ -1,3 +1,4 @@
+import { IsOptional } from 'class-validator';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { Review } from 'src/review/review.entity';
@@ -19,7 +20,7 @@ export class Appointment {
   })
   id: string;
 
-  @Column()
+  @Column({ default: 'PENDING' })
   status: string;
 
   @Column({ name: 'total_price', type: 'int' })
@@ -69,8 +70,8 @@ export class Appointment {
     foreignKeyConstraintName: 'appointment_review_foreign_key',
   })
   review: Review;
-
-  @Column({ name: 'review_id' })
+  @IsOptional()
+  @Column({ name: 'review_id', nullable: true })
   reviewId: string;
 
   @Column({ nullable: true })

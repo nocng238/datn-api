@@ -16,7 +16,7 @@ export class AuthController {
     return this.authService.login(credentials);
   }
 
-  @Post('client')
+  @Post('client/register')
   async clientRegister(
     @Body()
     registerDto: ClientRegisterDto,
@@ -24,7 +24,7 @@ export class AuthController {
     return this.authService.clientRegister(registerDto);
   }
 
-  @Post('doctor')
+  @Post('doctor/register')
   async DoctorRegister(
     @Body()
     registerDto: DoctorRegisterDto,

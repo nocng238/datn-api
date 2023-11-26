@@ -63,6 +63,6 @@ export class DoctorService {
       throw new NotFoundException('Doctor not found');
     }
     await this.doctorRepository.update({ id }, updateDoctorDto);
-    return { id, ...updateDoctorDto };
+    return { ...doctor, ...updateDoctorDto };
   }
 }

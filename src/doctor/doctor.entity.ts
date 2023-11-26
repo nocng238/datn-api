@@ -60,6 +60,9 @@ export class Doctor {
   @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
 
+  @Column({ name: 'credit_card_id', nullable: true })
+  credit_card_id: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

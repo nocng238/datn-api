@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateDoctorDto {
   @IsNotEmpty()
@@ -8,9 +8,16 @@ export class UpdateDoctorDto {
   @IsOptional()
   phone?: string;
 
-  @IsOptional()
-  address?: string;
+  @IsString()
+  @IsNotEmpty()
+  address: string;
 
   @IsOptional()
   workplace?: string;
+
+  @IsNumber()
+  feePerHour?: number;
+
+  @IsString()
+  sex?: string;
 }

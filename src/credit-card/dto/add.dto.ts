@@ -1,9 +1,9 @@
-import { IsDate, IsInt } from 'class-validator';
+import { IsDateString, IsInt } from 'class-validator';
 
 export class AddCreditCardDto {
   @IsInt()
   creditNumber: number;
 
-  @IsDate()
+  @IsDateString()
   expiredTime: Date;
 }

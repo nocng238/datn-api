@@ -1,14 +1,14 @@
-import { IsDate, IsOptional, IsUUID } from 'class-validator';
+import { IsDateString, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateAppoitmentDto {
   @IsUUID()
   doctorId: string;
 
-  @IsDate()
-  timeStart: Date;
+  @IsDateString()
+  startTime: Date;
 
-  @IsDate()
-  timeEnd: Date;
+  @IsDateString()
+  endTime: Date;
 
   @IsOptional()
   note?: string;

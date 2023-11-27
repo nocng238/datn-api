@@ -23,7 +23,7 @@ export class Appointment {
   @Column({ default: 'PENDING' })
   status: string;
 
-  @Column({ name: 'total_price', type: 'int' })
+  @Column({ name: 'total_price', type: 'int', nullable: true })
   totalPrice: number;
 
   @Column({ name: 'start_time' })
@@ -56,7 +56,7 @@ export class Appointment {
     onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'doctor_id',
+    name: 'client_id',
     foreignKeyConstraintName: 'appointment_client_foreign_key',
   })
   client: Client;
@@ -70,6 +70,7 @@ export class Appointment {
     foreignKeyConstraintName: 'appointment_review_foreign_key',
   })
   review: Review;
+
   @IsOptional()
   @Column({ name: 'review_id', nullable: true })
   reviewId: string;

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
   Put,
   UploadedFile,
@@ -55,7 +54,7 @@ export class AuthController {
     return this.authService.verifyEmail(verifyEmailRequestParamDto);
   }
 
-  @Get('forget-password')
+  @Post('forget-password')
   async forgetPassword(
     @Body() forgetPasswordRequestDto: ForgetPasswordRequestDto,
   ) {

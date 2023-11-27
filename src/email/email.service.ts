@@ -20,7 +20,8 @@ export class EmailService {
         templateId: this.configService.get('SENDGRID_VERIFY_EMAIL_TEMPLATE_ID'),
         dynamicTemplateData: { verificationUrl },
       })
-      .then(() => {
+      .then((data) => {
+        console.log(data);
         console.log('Send mail verify successfully!');
       })
       .catch((error) => {
@@ -39,7 +40,8 @@ export class EmailService {
         templateId: process.env.SENDGRID_RESET_PASSWORD_TEMPLATE_ID,
         dynamicTemplateData: { name, code },
       })
-      .then(() => {
+      .then((data) => {
+        console.log(data);
         console.log('Send email reset password successfully');
       })
       .catch((error) => {

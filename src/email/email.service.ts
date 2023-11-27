@@ -10,21 +10,22 @@ export class EmailService {
   ) {}
 
   async sendVerifyEmail(email: string, verificationUrl: string) {
-    return this.sendGridClient.send({
-      to: email,
-      from: {
-        name: this.configService.get('EMAIL_NAME'),
-        email: this.configService.get('FROM_EMAIL'),
-      },
-      templateId: this.configService.get('SENDGRID_VERIFY_EMAIL_TEMPLATE_ID'),
-      dynamicTemplateData: { verificationUrl },
-    });
-    // .then(() => {
-    //   console.log('Send mail verify successfully!');
-    // })
-    // .catch((error) => {
-    //   throw new ServiceUnavailableException(error.response);
-    // });
+    return this.sendGridClient
+      .send({
+        to: email,
+        from: {
+          name: this.configService.get('EMAIL_NAME'),
+          email: this.configService.get('FROM_EMAIL'),
+        },
+        templateId: this.configService.get('SENDGRID_VERIFY_EMAIL_TEMPLATE_ID'),
+        dynamicTemplateData: { verificationUrl },
+      })
+      .then(() => {
+        console.log('Send mail verify successfully!');
+      })
+      .catch((error) => {
+        throw new ServiceUnavailableException(error.response);
+      });
   }
 
   async sendForgetPasswordEmail(email: string, name: string, code: string) {

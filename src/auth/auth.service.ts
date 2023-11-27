@@ -2,7 +2,10 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
+  RequestTimeoutException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -14,9 +17,12 @@ import { Doctor } from 'src/doctor/doctor.entity';
 import { EmailService } from 'src/email/email.service';
 import { StatusEnum } from 'src/shared';
 import { Repository } from 'typeorm';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { ClientRegisterDto } from './dto/client-register.dto';
 import { Credentials } from './dto/credentials.dto';
 import { DoctorRegisterDto } from './dto/doctor-register.dto';
+import { ForgetPasswordRequestDto } from './dto/forget-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailRequestParamDto } from './dto/token-request-param.dto';
 import { JwtPayload } from './jwt.payload';
 
@@ -224,5 +230,150 @@ export class AuthService {
       'WEB_URL',
     )}/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
     return verificationUrl;
+  }
+
+  genResetPasswordCodeWithExpiryTime(expirationMinutes: number) {
+    const code = Math.random().toString(8).substring(2, 8);
+    const time_expiry = dayjs().add(expirationMinutes, 'minute').format();
+    return { code, time_expiry };
+  }
+
+  async forgetPassword(forgetPasswordRequestDto: ForgetPasswordRequestDto) {
+    const { email } = forgetPasswordRequestDto;
+    let user: Client | Doctor = null;
+    const client = await this.clientRepository.findOneBy({ email });
+    const doctor = await this.doctorRepository.findOneBy({ email });
+    if (client) {
+      user = client;
+    } else if (doctor) {
+      user = doctor;
+    }
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.status === StatusEnum.NOT_VERIFY) {
+      throw new UnauthorizedException('Email is not verified');
+    }
+    const { resetPasswordCodeExpiry } = user;
+    let allowSendEmail = false;
+    if (!resetPasswordCodeExpiry) {
+      allowSendEmail = true;
+    } else {
+      const timeSendEmail = dayjs(resetPasswordCodeExpiry).subtract(
+        4,
+        'minute',
+      );
+      if (dayjs().isAfter(timeSendEmail)) {
+        allowSendEmail = true;
+      } else {
+        throw new UnprocessableEntityException('Please try again in 1 minute');
+      }
+    }
+    const { code, time_expiry } = this.genResetPasswordCodeWithExpiryTime(5);
+    if (allowSendEmail) {
+      if (user.isDoctor) {
+        await this.doctorRepository.update(
+          { email: email },
+          {
+            resetPasswordCode: code,
+            resetPasswordCodeExpiry: time_expiry,
+          },
+        );
+      } else {
+        await this.clientRepository.update(
+          { email: email },
+          {
+            resetPasswordCode: code,
+            resetPasswordCodeExpiry: time_expiry,
+          },
+        );
+      }
+      await this.emailService.sendForgetPasswordEmail(
+        email,
+        user.fullname,
+        code,
+      );
+    }
+  }
+
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    const { email, code, newPassword } = resetPasswordDto;
+    let user: Client | Doctor = null;
+    const client = await this.clientRepository.findOneBy({
+      email,
+      resetPasswordCode: code,
+    });
+    const doctor = await this.doctorRepository.findOneBy({
+      email,
+      resetPasswordCode: code,
+    });
+    if (client) {
+      user = client;
+    } else if (doctor) {
+      user = doctor;
+    }
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user) throw new NotFoundException('User not found');
+
+    if (dayjs().isAfter(dayjs(user.resetPasswordCodeExpiry))) {
+      throw new RequestTimeoutException('Code reset password is expired');
+    } else {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      if (user.isDoctor) {
+        await this.doctorRepository.update(
+          {
+            id: user.id,
+          },
+          {
+            password: hashedPassword,
+            resetPasswordCode: null,
+            resetPasswordCodeExpiry: null,
+          },
+        );
+      } else {
+        await this.clientRepository.update(
+          {
+            id: user.id,
+          },
+          {
+            password: hashedPassword,
+            resetPasswordCode: null,
+            resetPasswordCodeExpiry: null,
+          },
+        );
+      }
+      return { message: 'RESET_PASSWORD_SUCCESSFULLY' };
+    }
+  }
+
+  async changePassword(
+    user: Client | Doctor,
+    changePasswordDto: ChangePasswordDto,
+  ) {
+    const { password } = user;
+    const { newPassword, oldPassword } = changePasswordDto;
+    const isMatch = await bcrypt.compare(oldPassword, password);
+    if (isMatch) {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      if (user.isDoctor) {
+        this.doctorRepository.update(
+          { id: user.id },
+          { password: hashedPassword },
+        );
+      } else {
+        this.clientRepository.update(
+          { id: user.id },
+          { password: hashedPassword },
+        );
+      }
+    } else {
+      throw new BadRequestException('Wrong password');
+    }
   }
 }

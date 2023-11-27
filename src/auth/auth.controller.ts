@@ -1,11 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { ClientRegisterDto } from './dto/client-register.dto';
 import { Credentials } from './dto/credentials.dto';
 import { DoctorRegisterDto } from './dto/doctor-register.dto';
+import { ForgetPasswordRequestDto } from './dto/forget-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailRequestParamDto } from './dto/token-request-param.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { GetUser } from './user-decorator';
 
 @Controller()
 export class AuthController {
@@ -37,5 +42,29 @@ export class AuthController {
     @Body() verifyEmailRequestParamDto: VerifyEmailRequestParamDto,
   ) {
     return this.authService.verifyEmail(verifyEmailRequestParamDto);
+  }
+
+  @Post('forget-password')
+  async forgetPassword(
+    @Body() forgetPasswordRequestDto: ForgetPasswordRequestDto,
+  ) {
+    return this.authService.forgetPassword(forgetPasswordRequestDto);
+  }
+
+  @Post('reset-password')
+  @HttpCode(200)
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  changePassword(
+    @GetUser() user: Client | Doctor,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(user, changePasswordDto);
   }
 }

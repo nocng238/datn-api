@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
 import { UpdateDoctorDto } from './dto/update.dto';
-
 @Injectable()
 export class DoctorService {
   constructor(
@@ -38,7 +37,7 @@ export class DoctorService {
       builder.andWhere(
         `NOT EXISTS (select from appointment where appointment.doctor_id = doctor.id 
           AND (
-            (appointment.start_time <= :startTime::DATE AND appointment.end_time >= :endTime) 
+            (appointment.start_time <= :startTime AND appointment.end_time >= :endTime ) 
             OR (appointment.start_time >= :startTime AND appointment.start_time < :endTime)
             OR (appointment.end_time > :startTime AND appointment.end_time <= :endTime)
           )

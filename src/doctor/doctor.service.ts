@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Appointment } from 'src/appointment/appointment.entity';
 import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
@@ -10,8 +9,6 @@ export class DoctorService {
   constructor(
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
-    @InjectRepository(Appointment)
-    private appoinmentRepository: Repository<Appointment>,
   ) {}
 
   async getListDoctors(findDoctor: FindDoctor) {

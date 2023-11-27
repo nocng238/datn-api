@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  ForbiddenException,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetUser } from 'src/auth/user-decorator';
 import { Client } from 'src/client/client.entity';
@@ -16,15 +10,12 @@ import { AddCreditCardDto } from './dto/add.dto';
 export class CreditCardController {
   constructor(private readonly creditCardService: CreditCardService) {}
 
-  @Put()
+  @Post()
   @UseGuards(JwtAuthGuard)
   async addCreditCard(
     @GetUser() user: Client | Doctor,
     @Body() addCreditCardDto: AddCreditCardDto,
   ) {
-    if (user.isDoctor) {
-      throw new ForbiddenException('Not allow doctor');
-    }
     return this.creditCardService.addCreditCard(user, addCreditCardDto);
   }
 }

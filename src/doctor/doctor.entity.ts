@@ -1,4 +1,5 @@
 import { Appointment } from 'src/appointment/appointment.entity';
+import { DoctorCreditCard } from 'src/credit-card/doctor-credit-card.entity';
 import { DoctorAvailableTime } from 'src/doctor-available-time/doctor-available-time.entity';
 import { Favorite } from 'src/favorite/favorite.entity';
 import { StatusEnum } from 'src/shared';
@@ -60,8 +61,8 @@ export class Doctor {
   @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
 
-  @Column({ name: 'credit_card_id', nullable: true })
-  credit_card_id: string;
+  @OneToMany(() => DoctorCreditCard, (creditCard) => creditCard.doctor)
+  creditCards: DoctorCreditCard[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

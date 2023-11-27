@@ -1,5 +1,5 @@
 import { Appointment } from 'src/appointment/appointment.entity';
-import { CreditCard } from 'src/credit-card/credit-card.entity';
+import { ClientCreditCard } from 'src/credit-card/client-credit-card.entity';
 import { Favorite } from 'src/favorite/favorite.entity';
 import { StatusEnum } from 'src/shared';
 import {
@@ -39,15 +39,6 @@ export class Client {
   @Column({ nullable: true })
   phone: string;
 
-  // @OneToOne(() => CreditCard, (creditCard) => creditCard.client)
-  // @JoinColumn({
-  //   name: 'credit_card_id',
-  //   foreignKeyConstraintName: 'credit_card_foreign_key',
-  // })
-  // creditCard: CreditCard
-  @Column({ nullable: true })
-  credit_card_id: string;
-
   @Column({
     nullable: true,
     default:
@@ -67,8 +58,8 @@ export class Client {
   @OneToMany(() => Favorite, (favorite) => favorite.client)
   favorites: Favorite[];
 
-  @OneToMany(() => CreditCard, (creditCard) => creditCard.client)
-  creditCards: CreditCard[];
+  @OneToMany(() => ClientCreditCard, (creditCard) => creditCard.client)
+  creditCards: ClientCreditCard[];
 
   @Column({ name: 'is_doctor', default: false })
   isDoctor: boolean;

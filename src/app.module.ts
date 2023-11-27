@@ -6,8 +6,9 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { AuthModule } from './auth/auth.module';
 import { Client } from './client/client.entity';
 import { ClientModule } from './client/client.module';
-import { CreditCard } from './credit-card/credit-card.entity';
+import { ClientCreditCard } from './credit-card/client-credit-card.entity';
 import { CreditCardModule } from './credit-card/credit-card.module';
+import { DoctorCreditCard } from './credit-card/doctor-credit-card.entity';
 import { DoctorAvailableTime } from './doctor-available-time/doctor-available-time.entity';
 import { DoctorAvailableTimeModule } from './doctor-available-time/doctor-available-time.module';
 import { Doctor } from './doctor/doctor.entity';
@@ -39,7 +40,8 @@ import { UserModule } from './user/user.module';
             DoctorAvailableTime,
             Favorite,
             Review,
-            CreditCard,
+            ClientCreditCard,
+            DoctorCreditCard,
           ],
           synchronize: true,
           url: `${

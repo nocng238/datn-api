@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { AuthService } from './auth.service';
@@ -44,22 +44,21 @@ export class AuthController {
     return this.authService.verifyEmail(verifyEmailRequestParamDto);
   }
 
-  @Post('forget-password')
+  @Get('forget-password')
   async forgetPassword(
     @Body() forgetPasswordRequestDto: ForgetPasswordRequestDto,
   ) {
     return this.authService.forgetPassword(forgetPasswordRequestDto);
   }
 
-  @Post('reset-password')
-  @HttpCode(200)
+  @Put('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  @Post('change-password')
+  @Put('change-password')
   @UseGuards(JwtAuthGuard)
   changePassword(
     @GetUser() user: Client | Doctor,

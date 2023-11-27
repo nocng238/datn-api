@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Appointment } from 'src/appointment/appointment.entity';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
 import { UpdateDoctorDto } from './dto/update.dto';
@@ -17,7 +17,9 @@ export class DoctorService {
 
   async getListDoctors(findDoctor: FindDoctor) {
     const { search, address, endTime, startTime } = findDoctor;
-    const builder = this.doctorRepository.createQueryBuilder('doctor');
+    const builder = this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect('doctor.appointments', 'appointments');
     if (search) {
       builder
         .where('doctor.email ilike :email', { email: `%${search}%` })
@@ -31,27 +33,14 @@ export class DoctorService {
       });
     }
 
-    const doctors = await builder.getMany();
-    const appointments = doctors.map((doctor) => {
-      return this.appoinmentRepository.findBy({ doctor });
-    });
-    // .flat(1);
     if (startTime && endTime) {
-      // startTime always <= endTime no need to handle not happy case
+      // startTime always <= endTime no need to handle unhappy case
       builder.andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            'appointments.start_time <= :startTime AND appointments.end_time <= :startTime',
-            {
-              startTime,
-            },
-          ).orWhere(
-            'appointments.start_time >= :endTime AND appointments.end_time <= :endTime',
-            {
-              endTime,
-            },
-          );
-        }),
+        'NOT EXISTS (select from appointment where appointment.doctor_id = doctor.id AND (appointment.end_time >= :startTime OR appointment.start_time <= :endTime))',
+        {
+          startTime,
+          endTime,
+        },
       );
     }
     return builder.getMany();

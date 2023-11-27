@@ -21,6 +21,7 @@ export class UserController {
     delete user.resetPasswordCode;
     delete user.resetPasswordCodeExpiry;
     delete user.password;
+    delete user.sentEmailVerifyAt;
     delete user.createdAt;
     delete user.updatedAt;
     return user;

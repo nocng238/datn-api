@@ -86,6 +86,7 @@ export class DoctorService {
       .catch((error) => {
         throw new ServiceUnavailableException(error);
       });
-    await this.doctorRepository.update({ id: user.id }, { cv: uploadPDF.url });
+    // await this.doctorRepository.update({ id: user.id }, { cv: uploadPDF.url });
+    return uploadPDF.url;
   }
 }

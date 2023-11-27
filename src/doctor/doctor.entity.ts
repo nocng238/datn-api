@@ -58,6 +58,9 @@ export class Doctor {
   @Column({ nullable: true })
   cv: string;
 
+  @Column({ name: 'cv_file_name', nullable: true })
+  cvFileName: string;
+
   @Column({ name: 'fee_per_hour', nullable: true })
   feePerHour: number;
 

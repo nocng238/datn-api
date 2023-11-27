@@ -36,7 +36,13 @@ export class DoctorService {
     if (startTime && endTime) {
       // startTime always <= endTime no need to handle unhappy case
       builder.andWhere(
-        'NOT EXISTS (select from appointment where appointment.doctor_id = doctor.id AND (appointment.end_time >= :startTime OR appointment.start_time <= :endTime))',
+        `NOT EXISTS (select from appointment where appointment.doctor_id = doctor.id 
+          AND (
+            (appointment.start_time <= :startTime::DATE AND appointment.end_time >= :endTime) 
+            OR (appointment.start_time >= :startTime AND appointment.start_time < :endTime)
+            OR (appointment.end_time > :startTime AND appointment.end_time <= :endTime)
+          )
+        )`,
         {
           startTime,
           endTime,

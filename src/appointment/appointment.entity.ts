@@ -26,10 +26,10 @@ export class Appointment {
   @Column({ name: 'total_price', type: 'int', nullable: true })
   totalPrice: number;
 
-  @Column({ name: 'start_time' })
+  @Column({ name: 'start_time', type: 'timestamptz' })
   startTime: Date;
 
-  @Column({ name: 'end_time' })
+  @Column({ name: 'end_time', type: 'timestamptz' })
   endTime: Date;
 
   @CreateDateColumn({ name: 'created_at' })

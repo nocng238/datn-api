@@ -17,16 +17,13 @@ export class UserController {
   @Get('/me')
   @UseGuards(JwtAuthGuard)
   getCurrentUser(@GetUser() user: Client | Doctor) {
-    const {
-      registerVerifyingToken,
-      resetPasswordCode,
-      resetPasswordCodeExpiry,
-      password,
-      createdAt,
-      updatedAt,
-      ...restParams
-    } = user;
-    return restParams;
+    delete user.registerVerifyingToken;
+    delete user.resetPasswordCode;
+    delete user.resetPasswordCodeExpiry;
+    delete user.password;
+    delete user.createdAt;
+    delete user.updatedAt;
+    return user;
   }
 
   @Put()

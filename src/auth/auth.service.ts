@@ -389,6 +389,7 @@ export class AuthService {
       .catch((error) => {
         throw new ServiceUnavailableException(error);
       });
+
     if (user.isDoctor) {
       await this.doctorRepository.update(
         { id: user.id },

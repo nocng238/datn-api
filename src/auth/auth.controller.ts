@@ -77,6 +77,8 @@ export class AuthController {
     return this.authService.changePassword(user, changePasswordDto);
   }
 
+  @Post('/upload-avatar')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file', imageUploadOptions))
   async uploadAvatar(
     @GetUser() user: Client | Doctor,

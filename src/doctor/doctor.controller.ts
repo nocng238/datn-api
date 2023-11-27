@@ -1,6 +1,8 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
+  Post,
   Query,
   UploadedFile,
   UseGuards,
@@ -29,11 +31,15 @@ export class DoctorController {
     return this.doctorService.getListDoctors(findDoctor, paginationRequestdto);
   }
 
+  @Post('upload-cv')
   @UseInterceptors(FileInterceptor('file', pdfUploadOptions))
   async uploadCV(
     @GetUser() user: Client | Doctor,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
     return this.doctorService.uploadCV(user, file);
   }
 }

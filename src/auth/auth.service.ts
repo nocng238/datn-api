@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   RequestTimeoutException,
+  ServiceUnavailableException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import * as dayjs from 'dayjs';
 import { Client } from 'src/client/client.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { EmailService } from 'src/email/email.service';
 import { StatusEnum } from 'src/shared';
@@ -36,6 +38,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
+    private cloudinary: CloudinaryService,
   ) {}
 
   async login(credentials: Credentials) {
@@ -374,6 +377,28 @@ export class AuthService {
       }
     } else {
       throw new BadRequestException('Wrong password');
+    }
+  }
+
+  async uploadAvatar(user: Client | Doctor, file: Express.Multer.File) {
+    const uploadImage = await this.cloudinary
+      .uploadFile(file)
+      .then((data) => {
+        return data;
+      })
+      .catch((error) => {
+        throw new ServiceUnavailableException(error);
+      });
+    if (user.isDoctor) {
+      await this.doctorRepository.update(
+        { id: user.id },
+        { avatar: uploadImage.url },
+      );
+    } else {
+      await this.clientRepository.update(
+        { id: user.id },
+        { avatar: uploadImage.url },
+      );
     }
   }
 }

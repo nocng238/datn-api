@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
+import { imageUploadOptions } from 'src/shared/utils/utils';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ClientRegisterDto } from './dto/client-register.dto';
@@ -65,5 +76,13 @@ export class AuthController {
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
     return this.authService.changePassword(user, changePasswordDto);
+  }
+
+  @UseInterceptors(FileInterceptor('file', imageUploadOptions))
+  async uploadAvatar(
+    @GetUser() user: Client | Doctor,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.authService.uploadAvatar(user, file);
   }
 }

@@ -6,6 +6,7 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { AuthModule } from './auth/auth.module';
 import { Client } from './client/client.entity';
 import { ClientModule } from './client/client.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ClientCreditCard } from './credit-card/client-credit-card.entity';
 import { CreditCardModule } from './credit-card/credit-card.module';
 import { DoctorCreditCard } from './credit-card/doctor-credit-card.entity';
@@ -67,6 +68,7 @@ import { UserModule } from './user/user.module';
     SeedModule,
     CreditCardModule,
     EmailModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}

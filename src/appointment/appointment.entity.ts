@@ -2,6 +2,7 @@ import { IsOptional } from 'class-validator';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { Review } from 'src/review/review.entity';
+import { AppointmentStatusEnum, PaymentStatusEnum } from 'src/shared';
 import {
   Column,
   CreateDateColumn,
@@ -20,8 +21,12 @@ export class Appointment {
   })
   id: string;
 
-  @Column({ default: 'PENDING' })
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: AppointmentStatusEnum,
+    default: AppointmentStatusEnum.PENDING,
+  })
+  status: AppointmentStatusEnum;
 
   @Column({ name: 'total_price', type: 'int', nullable: true })
   totalPrice: number;
@@ -77,4 +82,12 @@ export class Appointment {
 
   @Column({ nullable: true })
   note: string;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentStatusEnum,
+    default: PaymentStatusEnum.UNPAID,
+    name: 'payment_status',
+  })
+  paymentStatus: PaymentStatusEnum;
 }

@@ -47,7 +47,7 @@ export class AuthController {
     return this.authService.doctorRegister(registerDto);
   }
 
-  @Post('auth/verify-email')
+  @Post('verify-email')
   async verifyEmail(
     @Body() verifyEmailRequestParamDto: VerifyEmailRequestParamDto,
   ) {

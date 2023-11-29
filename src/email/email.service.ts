@@ -1,6 +1,10 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  generateResetPasswordTemplate,
+  generateVerifyEmailTemplate,
+} from './templates';
 
 @Injectable()
 export class EmailService {
@@ -36,7 +40,7 @@ export class EmailService {
       const sendMailResponse = await this.sendMail(
         email,
         'Petcare: Verify email',
-        verificationUrl,
+        generateVerifyEmailTemplate(verificationUrl),
       );
       console.log(sendMailResponse);
       console.log('Send email reset password successfully');
@@ -46,6 +50,10 @@ export class EmailService {
   }
 
   async sendForgetPasswordEmail(email: string, name: string, code: string) {
-    return this.sendMail(email, 'Petcare: Reset password', code);
+    return this.sendMail(
+      email,
+      'Petcare: Reset password',
+      generateResetPasswordTemplate(name, code),
+    );
   }
 }

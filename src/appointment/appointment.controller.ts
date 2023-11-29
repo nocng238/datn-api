@@ -31,11 +31,7 @@ export class AppointmentController {
     if (user.isDoctor) {
       throw new ForbiddenException('Not allow doctor');
     }
-    const clientId = user.id;
-    return this.appointmentService.createAppoitment(
-      clientId,
-      createAppointmentDto,
-    );
+    return this.appointmentService.createAppoitment(user, createAppointmentDto);
   }
 
   @Put('/approve/:id')
@@ -47,6 +43,32 @@ export class AppointmentController {
       throw new ForbiddenException('Not allow client');
     }
     return this.appointmentService.approveAppointment(id);
+  }
+
+  @Put('/cancel/:id')
+  async cancelAppointment(
+    @GetUser() user: Client | Doctor,
+    @Param('id') id: string,
+    @Body() cancelAppointmentDto: { reason: string },
+  ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    return this.appointmentService.cancelAppointment(
+      id,
+      cancelAppointmentDto.reason,
+    );
+  }
+
+  @Put('/finish/:id')
+  async finishAppointment(
+    @GetUser() user: Client | Doctor,
+    @Param('id') id: string,
+  ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    return this.appointmentService.finishAppointment(id);
   }
 
   @Get()

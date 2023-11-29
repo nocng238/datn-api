@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
+import { EmailService } from 'src/email/email.service';
 import { AppointmentStatusEnum } from 'src/shared';
 import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { Repository } from 'typeorm';
@@ -15,10 +16,11 @@ export class AppointmentService {
     private appointmentRepository: Repository<Appointment>,
     @InjectRepository(Doctor)
     private doctorRepository: Repository<Doctor>,
+    private readonly emailService: EmailService,
   ) {}
 
   async createAppoitment(
-    clientId: string,
+    client: Client | Doctor,
     createAppointmentDto: CreateAppoitmentDto,
   ): Promise<Appointment> {
     const doctor = await this.doctorRepository.findOneBy({
@@ -29,16 +31,90 @@ export class AppointmentService {
     }
     const createdAppointment = this.appointmentRepository.create({
       ...createAppointmentDto,
-      clientId,
+      client,
       totalPrice: doctor.feePerHour,
     });
-    return this.appointmentRepository.save(createdAppointment);
+    const newAppointment = await this.appointmentRepository.save(
+      createdAppointment,
+    );
+    const payloadEmail: {
+      idAppointment: string;
+      clientName: string;
+      clientEmail: string;
+      startTime: Date;
+      endTime: Date;
+      note: string;
+    } = {
+      idAppointment: newAppointment.id,
+      clientName: client.fullname,
+      clientEmail: client.email,
+      startTime: newAppointment.startTime,
+      endTime: newAppointment.endTime,
+      note: newAppointment.note,
+    };
+    await this.emailService.sendEmailForDoctorHasANewAppointment(
+      doctor.email,
+      payloadEmail,
+    );
+    return newAppointment;
   }
 
   async approveAppointment(id: string) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['client', 'doctor'],
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
     await this.appointmentRepository.update(
-      { id },
+      { id: appointment.id },
       { status: AppointmentStatusEnum.APPROVED },
+    );
+    await this.emailService.sendEmailForClientIfDoctorApproveAppointment(
+      appointment.client.email,
+      {
+        doctorName: appointment.doctor.fullname,
+        endTime: appointment.endTime,
+        startTime: appointment.startTime,
+      },
+    );
+  }
+
+  async cancelAppointment(id: string, reason: string) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['client', 'doctor'],
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    await this.appointmentRepository.update(
+      { id: appointment.id },
+      { status: AppointmentStatusEnum.CANCEL },
+    );
+    await this.emailService.sendEmailForClientIfDoctorCancelAppointment(
+      appointment.client.email,
+      {
+        reason,
+        doctorName: appointment.doctor.fullname,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+      },
+    );
+  }
+
+  async finishAppointment(id: string) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['client', 'doctor'],
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    await this.appointmentRepository.update(
+      { id: appointment.id },
+      { status: AppointmentStatusEnum.FINISHED },
     );
   }
 

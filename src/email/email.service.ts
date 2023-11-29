@@ -88,4 +88,63 @@ export class EmailService {
       generateResetPasswordTemplate(name, code),
     );
   }
+
+  async sendEmailForDoctorHasANewAppointment(
+    email: string,
+    payload: {
+      idAppointment: string;
+      clientName: string;
+      clientEmail: string;
+      startTime: Date;
+      endTime: Date;
+      note: string;
+    },
+  ) {
+    return this.sendMail(
+      email,
+      'Petcare: Doctor has a new appointment',
+      `<p> You have a new appointment: </p><br>
+      <p> Email: ${payload.clientEmail},</p><br>
+      <p> Name: ${payload.clientName},</p><br>
+      <p> Time: ${payload.startTime} - ${payload.endTime},</p><br>
+      <p> Note: ${payload.note ?? 'Nothing'}.</p><br>
+      <p>Click here to <a href="${this.configService.get('WEB_URL')}/approve/${
+        payload.idAppointment
+      }">approve appointment</a>.</p>`,
+    );
+  }
+
+  async sendEmailForClientIfDoctorApproveAppointment(
+    email: string,
+    payload: {
+      doctorName: string;
+      startTime: Date;
+      endTime: Date;
+    },
+  ) {
+    return this.sendMail(
+      email,
+      'Petcare: Doctor has approved your appointment',
+      `<p>Appointment information: </p><br>
+      <p>Doctor: ${payload.doctorName}, </p><br>
+      <p>Time: ${payload.startTime} - ${payload.endTime}, </p><br>.
+      <p>Make sure you go on time, see you there!</p>`,
+    );
+  }
+
+  async sendEmailForClientIfDoctorCancelAppointment(
+    email: string,
+    payload: {
+      reason: string;
+      doctorName: string;
+      startTime: Date;
+      endTime: Date;
+    },
+  ) {
+    return this.sendMail(
+      email,
+      'Petcare: Doctor has canceled your appointment',
+      `<p>We regret to inform you that the doctor ${payload.doctorName} has canceled the appointment ( ${payload.startTime} - ${payload.endTime}) due to reason: ${payload.reason}</p>`,
+    );
+  }
 }

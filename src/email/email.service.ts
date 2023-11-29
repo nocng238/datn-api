@@ -1,51 +1,51 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
 
 @Injectable()
 export class EmailService {
   constructor(
-    @InjectSendGrid() private sendGridClient: SendGridService,
+    private readonly mailerService: MailerService,
     private configService: ConfigService,
   ) {}
+  private readonly logger = new Logger(EmailService.name);
+
+  async sendMail(
+    to: string,
+    subject: string,
+    html: string,
+    context?: { [name: string]: unknown } | undefined,
+  ): Promise<string> {
+    const sender = process.env.SENDER;
+    try {
+      return await this.mailerService.sendMail({
+        to,
+        sender,
+        subject,
+        html,
+        context,
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error('Send email fail');
+    }
+  }
 
   async sendVerifyEmail(email: string, verificationUrl: string) {
-    return this.sendGridClient
-      .send({
-        to: email,
-        from: {
-          name: this.configService.get('EMAIL_NAME'),
-          email: this.configService.get('FROM_EMAIL'),
-        },
-        templateId: this.configService.get('SENDGRID_VERIFY_EMAIL_TEMPLATE_ID'),
-        dynamicTemplateData: { verificationUrl },
-      })
-      .then((data) => {
-        console.log(data);
-        console.log('Send mail verify successfully!');
-      })
-      .catch((error) => {
-        throw new ServiceUnavailableException(error.response);
-      });
+    try {
+      const sendMailResponse = await this.sendMail(
+        email,
+        'Petcare: Verify email',
+        verificationUrl,
+      );
+      console.log(sendMailResponse);
+      console.log('Send email reset password successfully');
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async sendForgetPasswordEmail(email: string, name: string, code: string) {
-    return await this.sendGridClient
-      .send({
-        to: email,
-        from: {
-          name: process.env.EMAIL_NAME,
-          email: process.env.FROM_EMAIL,
-        },
-        templateId: process.env.SENDGRID_RESET_PASSWORD_TEMPLATE_ID,
-        dynamicTemplateData: { name, code },
-      })
-      .then((data) => {
-        console.log(data);
-        console.log('Send email reset password successfully');
-      })
-      .catch((error) => {
-        throw new ServiceUnavailableException(error);
-      });
+    return this.sendMail(email, 'Petcare: Reset password', code);
   }
 }

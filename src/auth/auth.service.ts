@@ -291,11 +291,11 @@ export class AuthService {
           },
         );
       }
-      await this.emailService.sendForgetPasswordEmail(
-        email,
-        user.fullname,
-        code,
-      );
+      // await this.emailService.sendForgetPasswordEmail(
+      //   email,
+      //   user.fullname,
+      //   code,
+      // );
     }
   }
 

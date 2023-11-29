@@ -1,16 +1,31 @@
+import * as aws from '@aws-sdk/client-ses';
+import { SES } from '@aws-sdk/client-ses';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 import { EmailService } from './email.service';
 
 @Module({
   imports: [
-    SendGridModule.forRootAsync({
+    MailerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        apiKey: configService.get('SENDGRID_API_KEY'),
-      }),
       inject: [ConfigService],
+      useFactory: () => {
+        return {
+          transport: {
+            SES: {
+              ses: new SES({
+                credentials: {
+                  accessKeyId: process.env.ACCESS_KEY_ID,
+                  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+                },
+                region: process.env.REGION,
+              }),
+              aws,
+            },
+          },
+        };
+      },
     }),
   ],
   providers: [EmailService],

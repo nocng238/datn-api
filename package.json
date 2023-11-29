@@ -21,9 +21,14 @@
     "test:e2e": "env-cmd jest --config ./test/jest-e2e.json --passWithNoTests",
     "prepare": "is-ci || husky install"
   },
+  "resolutions": {
+    "wrap-ansi": "^7.0.0"
+  },
   "dependencies": {
+    "string-width": "^1.0.2 || 2 || 3 || 4",
     "@aws-sdk/client-s3": "3.290.0",
-    "@nestjs-modules/mailer": "1.8.1",
+    "@aws-sdk/client-ses": "^3.461.0",
+    "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/common": "9.3.12",
     "@nestjs/config": "2.3.1",
     "@nestjs/core": "9.3.12",
@@ -41,15 +46,11 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "cloudinary": "^1.41.0",
-    "fb": "2.0.0",
-    "google-auth-library": "8.7.0",
-    "handlebars": "4.7.7",
+    "dayjs": "^1.11.10",
     "multer": "1.4.4",
     "multer-s3": "3.0.1",
-    "nestjs-i18n": "10.2.6",
     "nodemailer": "6.9.1",
     "passport": "0.6.0",
-    "passport-anonymous": "1.0.1",
     "passport-jwt": "4.0.1",
     "pg": "8.10.0",
     "reflect-metadata": "0.1.13",

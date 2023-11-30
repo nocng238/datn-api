@@ -24,7 +24,7 @@ export default class StripeController {
     );
   }
 
-  @Get('credit-cards')
+  @Get('/stripe/credit-cards')
   @UseGuards(JwtAuthGuard)
   async getCreditCards(@GetUser() user: Client | Doctor) {
     return this.stripeService.listCreditCards(user.stripeCustomerId);

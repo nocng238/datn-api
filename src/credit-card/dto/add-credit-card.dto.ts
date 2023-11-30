@@ -10,11 +10,14 @@ export class AddCreditCardDto {
   @IsNumberString()
   creditNumber: string;
 
-  @IsDateString()
-  expiredTime: Date;
+  @IsInt()
+  expiredYear: Date;
 
   @IsInt()
-  cvc: number;
+  expiredMonth: number;
+
+  @IsString()
+  brand: string;
 
   @IsString()
   @IsNotEmpty()

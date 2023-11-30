@@ -54,7 +54,7 @@ import { UserModule } from './user/user.module';
             'DB_PORT',
           )}/${configService.get('DB_DATABASE')}`,
           keepConnectionAlive: true,
-          logging: true,
+          // logging: true,
         };
       },
     }),

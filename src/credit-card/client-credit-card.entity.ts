@@ -16,12 +16,6 @@ export class ClientCreditCard {
   })
   id: string;
 
-  @Column({ name: 'credit_number' })
-  creditNumber: string;
-
-  @Column({ name: 'expired_time' })
-  expiredTime: Date;
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -43,4 +37,7 @@ export class ClientCreditCard {
 
   @Column({ name: 'is_main' })
   isMain: boolean;
+
+  @Column({ name: 'payment_method_id' })
+  paymentMethodId: string;
 }

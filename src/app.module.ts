@@ -20,6 +20,7 @@ import { FavoriteModule } from './favorite/favorite.module';
 import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
 import { SeedModule } from './seed/seed.module';
+import { StripeModule } from './stripe/stripe.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -69,6 +70,7 @@ import { UserModule } from './user/user.module';
     CreditCardModule,
     EmailModule,
     CloudinaryModule,
+    StripeModule,
   ],
 })
 export class AppModule {}

@@ -18,6 +18,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { EmailService } from 'src/email/email.service';
 import { StatusEnum } from 'src/shared';
+import StripeService from 'src/stripe/stripe.service';
 import { Repository } from 'typeorm';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ClientRegisterDto } from './dto/client-register.dto';
@@ -39,6 +40,7 @@ export class AuthService {
     private configService: ConfigService,
     private emailService: EmailService,
     private cloudinary: CloudinaryService,
+    private stripeService: StripeService,
   ) {}
 
   async login(credentials: Credentials) {
@@ -92,10 +94,15 @@ export class AuthService {
       user = doctor;
     }
     if (!user) {
+      const stripeCustomer = await this.stripeService.createCustomer(
+        registerDto.fullname,
+        registerDto.email,
+      );
       user = this.clientRepository.create({
         ...registerDto,
         email,
         password: hashedPassword,
+        stripeCustomerId: stripeCustomer.id,
       });
     } else if (user.status === StatusEnum.NOT_VERIFY) {
       user = this.clientRepository.create({
@@ -103,6 +110,7 @@ export class AuthService {
         ...registerDto,
         email,
         password: hashedPassword,
+        stripeCustomerId: user.stripeCustomerId,
       });
     } else {
       throw new ConflictException('Email already exists');
@@ -134,10 +142,15 @@ export class AuthService {
       user = doctor;
     }
     if (!user) {
+      const stripeCustomer = await this.stripeService.createCustomer(
+        registerDto.fullname,
+        registerDto.email,
+      );
       user = this.doctorRepository.create({
         ...registerDto,
         email,
         password: hashedPassword,
+        stripeCustomerId: stripeCustomer.id,
       });
     } else if (user.status === StatusEnum.NOT_VERIFY) {
       user = this.doctorRepository.create({
@@ -145,6 +158,7 @@ export class AuthService {
         ...registerDto,
         email,
         password: hashedPassword,
+        stripeCustomerId: user.stripeCustomerId,
       });
     } else {
       throw new ConflictException('Email already exists');

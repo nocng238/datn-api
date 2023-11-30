@@ -12,7 +12,7 @@ import { GetUser } from 'src/auth/user-decorator';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { CreditCardService } from './credit-card.service';
-import { AddCreditCardDto } from './dto/add.dto';
+import { AddCreditCardDto } from './dto/add-credit-card.dto';
 
 @Controller('credit-card')
 @UseGuards(JwtAuthGuard)

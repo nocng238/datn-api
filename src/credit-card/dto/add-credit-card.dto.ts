@@ -5,6 +5,7 @@ import {
   IsNumberString,
   IsString,
 } from 'class-validator';
+import { CreditCardBrand } from 'src/shared';
 
 export class AddCreditCardDto {
   @IsNumberString()
@@ -17,7 +18,7 @@ export class AddCreditCardDto {
   expiredMonth: number;
 
   @IsString()
-  brand: string;
+  brand: CreditCardBrand;
 
   @IsString()
   @IsNotEmpty()

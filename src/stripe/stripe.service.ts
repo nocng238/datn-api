@@ -35,9 +35,8 @@ export default class StripeService {
   }
 
   public async attachCreditCard(paymentMethodId: string, customerId: string) {
-    return this.stripe.paymentMethods.create({
+    return this.stripe.paymentMethods.attach(paymentMethodId, {
       customer: customerId,
-      payment_method: paymentMethodId,
     });
   }
 
@@ -53,8 +52,8 @@ export default class StripeService {
   }
 
   public async setDefaultCreditCard(
-    customerId: string,
     paymentMethodId: string,
+    customerId: string,
   ) {
     try {
       return await this.stripe.customers.update(customerId, {

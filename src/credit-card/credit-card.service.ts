@@ -165,7 +165,7 @@ export class CreditCardService {
     }
   }
 
-  delete(id: string, user: Client | Doctor) {
+  delete(id: string) {
     return this.stripeService.detachCreditCard(id);
   }
 }

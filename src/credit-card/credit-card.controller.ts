@@ -39,7 +39,7 @@ export class CreditCardController {
   }
 
   @Delete(':/id')
-  async deleteCard(@GetUser() user: Client | Doctor, @Param('id') id: string) {
-    return this.creditCardService.delete(id, user);
+  async deleteCard(@Param('id') id: string) {
+    return this.creditCardService.delete(id);
   }
 }

@@ -19,6 +19,13 @@ export default class StripeController {
   //     user.stripeCustomerId,
   //   );
   // }
+  @Post('stripe/:customerId/:paymentMethodId')
+  async addCard(
+    @Param('customerId') customerId: string,
+    @Param('paymentMethodId') paymentMethodId: string,
+  ) {
+    await this.stripeService.attachCreditCard(paymentMethodId, customerId);
+  }
 
   @Post('charge/stripe/:customerId')
   async createCharge(
@@ -39,6 +46,6 @@ export default class StripeController {
     @Param('customerId') customerId: string,
     @Param('paymentMethodId') paymentMethodId: string,
   ) {
-    return this.stripeService.setDefaultCreditCard(customerId, paymentMethodId);
+    return this.stripeService.setDefaultCreditCard(paymentMethodId, customerId);
   }
 }

@@ -38,8 +38,8 @@ export class CreditCardController {
     return this.creditCardService.updateMain(id, user);
   }
 
-  @Delete(':/id')
-  async deleteCard(@Param('id') id: string) {
-    return this.creditCardService.delete(id);
+  @Delete('/:id')
+  async deleteCard(@Param('id') id: string, @GetUser() user: Client | Doctor) {
+    return this.creditCardService.delete(id, user);
   }
 }

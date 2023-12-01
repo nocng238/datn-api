@@ -49,9 +49,9 @@ export class CreditCardService {
       paymentMethodId,
       user.stripeCustomerId,
     );
-    if (!isMain) {
+    if (mainCredit) {
       await this.stripeService.setDefaultCreditCard(
-        paymentMethodId,
+        mainCredit.paymentMethodId,
         user.stripeCustomerId,
       );
     }
@@ -108,7 +108,7 @@ export class CreditCardService {
             (dbCard) => dbCard.paymentMethodId === stripeCard.id,
           );
           if (dbCard) {
-            return { ...stripeCard, isMain: dbCard.isMain };
+            return { ...dbCard, stripeInfor: { ...stripeCard } };
           }
           return null;
         })
@@ -120,15 +120,16 @@ export class CreditCardService {
     let creditCard: ClientCreditCard | DoctorCreditCard;
     if (user.isDoctor) {
       creditCard = await this.doctorCreditCardRepository.findOneBy({
-        doctorId: user.id,
+        id,
       });
     } else {
       creditCard = await this.clientCreditCardRepository.findOneBy({
-        clientId: user.id,
+        id,
       });
     }
     if (creditCard) {
       if (creditCard.isMain) {
+        console.log(creditCard);
         throw new BadRequestException('This card already is main');
       }
     } else {
@@ -165,7 +166,24 @@ export class CreditCardService {
     }
   }
 
-  delete(id: string) {
-    return this.stripeService.detachCreditCard(id);
+  async delete(id: string, user: Client | Doctor) {
+    let creditCard: ClientCreditCard | DoctorCreditCard;
+    if (user.isDoctor) {
+      creditCard = await this.doctorCreditCardRepository.findOneBy({
+        id,
+      });
+    } else {
+      creditCard = await this.clientCreditCardRepository.findOneBy({
+        id,
+      });
+    }
+    if (!creditCard) {
+      throw new NotFoundException('Credit card not found');
+    }
+    if (creditCard.isMain) {
+      throw new BadRequestException('Can not delete main card');
+    }
+    await this.clientCreditCardRepository.delete({ id });
+    await this.stripeService.detachCreditCard(creditCard.paymentMethodId);
   }
 }

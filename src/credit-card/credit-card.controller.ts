@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -35,5 +36,10 @@ export class CreditCardController {
   @Put('main/:id')
   async updateMain(@Param('id') id: string, @GetUser() user: Client | Doctor) {
     return this.creditCardService.updateMain(id, user);
+  }
+
+  @Delete(':/id')
+  async deleteCard(@GetUser() user: Client | Doctor, @Param('id') id: string) {
+    return this.creditCardService.delete(id, user);
   }
 }

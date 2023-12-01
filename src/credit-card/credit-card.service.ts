@@ -49,6 +49,12 @@ export class CreditCardService {
       paymentMethodId,
       user.stripeCustomerId,
     );
+    if (!isMain) {
+      await this.stripeService.setDefaultCreditCard(
+        paymentMethodId,
+        user.stripeCustomerId,
+      );
+    }
     if (user.isDoctor) {
       const createdCreditCard = this.doctorCreditCardRepository.create({
         ...addCreditCardDto,
@@ -67,10 +73,46 @@ export class CreditCardService {
   }
 
   async getCreditCards(user: Client | Doctor) {
+    // not tested
+    let dbCards: ClientCreditCard[] | DoctorCreditCard[];
     if (user.isDoctor) {
-      return this.doctorCreditCardRepository.findBy({ doctorId: user.id });
+      dbCards = await this.doctorCreditCardRepository.findBy({
+        doctorId: user.id,
+      });
+      const stripeCards = await this.stripeService.listCreditCards(
+        user.stripeCustomerId,
+      );
+      const { data } = stripeCards;
+      return data
+        .map((stripeCard) => {
+          const dbCard = (dbCards as DoctorCreditCard[]).find(
+            (dbCard) => dbCard.paymentMethodId === stripeCard.id,
+          );
+          if (dbCard) {
+            return { ...stripeCard, isMain: dbCard.isMain };
+          }
+          return null;
+        })
+        .filter((card) => card !== null);
     } else {
-      return this.clientCreditCardRepository.findBy({ clientId: user.id });
+      dbCards = await this.clientCreditCardRepository.findBy({
+        clientId: user.id,
+      });
+      const stripeCards = await this.stripeService.listCreditCards(
+        user.stripeCustomerId,
+      );
+      const { data } = stripeCards;
+      return data
+        .map((stripeCard) => {
+          const dbCard = (dbCards as ClientCreditCard[]).find(
+            (dbCard) => dbCard.paymentMethodId === stripeCard.id,
+          );
+          if (dbCard) {
+            return { ...stripeCard, isMain: dbCard.isMain };
+          }
+          return null;
+        })
+        .filter((card) => card !== null);
     }
   }
 
@@ -121,5 +163,9 @@ export class CreditCardService {
       );
       await this.clientCreditCardRepository.update({ id }, { isMain: true });
     }
+  }
+
+  delete(id: string, user: Client | Doctor) {
+    return this.stripeService.detachCreditCard(id);
   }
 }

@@ -76,6 +76,6 @@ export class Client {
   @Column({ name: 'sent_email_verify_at', type: 'timestamptz', nullable: true })
   sentEmailVerifyAt: Date;
 
-  @Column({ name: 'stripe_customer_id', nullable: true })
+  @Column({ name: 'stripe_customer_id' })
   stripeCustomerId: string;
 }

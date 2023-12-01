@@ -19,7 +19,6 @@ import { Favorite } from './favorite/favorite.entity';
 import { FavoriteModule } from './favorite/favorite.module';
 import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
-import { SeedModule } from './seed/seed.module';
 import { StripeModule } from './stripe/stripe.module';
 import { UserModule } from './user/user.module';
 
@@ -66,7 +65,6 @@ import { UserModule } from './user/user.module';
     FavoriteModule,
     AuthModule,
     UserModule,
-    SeedModule,
     CreditCardModule,
     EmailModule,
     CloudinaryModule,

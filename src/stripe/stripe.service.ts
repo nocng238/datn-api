@@ -1,11 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import StripeError from './enum/stripeError.enum';
 
 @Injectable()
 export default class StripeService {
@@ -40,7 +35,7 @@ export default class StripeService {
   }
 
   public async attachCreditCard(paymentMethodId: string, customerId: string) {
-    return this.stripe.setupIntents.create({
+    return this.stripe.paymentMethods.create({
       customer: customerId,
       payment_method: paymentMethodId,
     });
@@ -49,13 +44,17 @@ export default class StripeService {
   public async listCreditCards(customerId: string) {
     return this.stripe.paymentMethods.list({
       customer: customerId,
-      type: 'card',
     });
   }
 
+  public async detachCreditCard(paymentMethodId: string) {
+    // Detaches a PaymentMethod object from a Customer. After a PaymentMethod is detached, it can no longer be used for a payment or re-attached to a Customer.
+    return this.stripe.paymentMethods.detach(paymentMethodId);
+  }
+
   public async setDefaultCreditCard(
-    paymentMethodId: string,
     customerId: string,
+    paymentMethodId: string,
   ) {
     try {
       return await this.stripe.customers.update(customerId, {
@@ -64,10 +63,8 @@ export default class StripeService {
         },
       });
     } catch (error) {
-      if (error.type === StripeError.InvalidRequest) {
-        throw new BadRequestException('Wrong credit card chosen');
-      }
-      throw new InternalServerErrorException();
+      console.log(error);
+      throw new InternalServerErrorException(error);
     }
   }
 }

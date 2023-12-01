@@ -46,10 +46,4 @@ export class DoctorCreditCard {
 
   @Column({ name: 'payment_method_id' })
   paymentMethodId: string;
-
-  @Column()
-  cvc: number;
-
-  @Column({ nullable: true })
-  brand: string;
 }

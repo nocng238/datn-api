@@ -1,8 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { GetUser } from 'src/auth/user-decorator';
-import { Client } from 'src/client/client.entity';
-import { Doctor } from 'src/doctor/doctor.entity';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import StripeService from '../stripe/stripe.service';
 import CreateChargeDto from './dto/create-charge.dto';
 
@@ -10,23 +6,39 @@ import CreateChargeDto from './dto/create-charge.dto';
 export default class StripeController {
   constructor(private readonly stripeService: StripeService) {}
 
-  @Post('charge')
-  @UseGuards(JwtAuthGuard)
+  // @Post('charge')
+  // @UseGuards(JwtAuthGuard)
+  // async createCharge(
+  //   @Body() charge: CreateChargeDto,
+  //   @GetUser() user: Client | Doctor,
+  // ) {
+  //   const { amount, paymentMethodId } = charge;
+  //   await this.stripeService.charge(
+  //     amount,
+  //     paymentMethodId,
+  //     user.stripeCustomerId,
+  //   );
+  // }
+
+  @Post('charge/stripe/:customerId')
   async createCharge(
     @Body() charge: CreateChargeDto,
-    @GetUser() user: Client | Doctor,
+    @Param('customerId') customerId: string,
   ) {
     const { amount, paymentMethodId } = charge;
-    await this.stripeService.charge(
-      amount,
-      paymentMethodId,
-      user.stripeCustomerId,
-    );
+    await this.stripeService.charge(amount, paymentMethodId, customerId);
   }
 
-  @Get('/stripe/credit-cards')
-  @UseGuards(JwtAuthGuard)
-  async getCreditCards(@GetUser() user: Client | Doctor) {
-    return this.stripeService.listCreditCards(user.stripeCustomerId);
+  @Get('/stripe/credit-cards/:customerId')
+  async getCreditCards(@Param('customerId') id: string) {
+    return this.stripeService.listCreditCards(id);
+  }
+
+  @Put('/stripe/credit-cards/:customerId/:paymentMethodId')
+  async setDefault(
+    @Param('customerId') customerId: string,
+    @Param('paymentMethodId') paymentMethodId: string,
+  ) {
+    return this.stripeService.setDefaultCreditCard(customerId, paymentMethodId);
   }
 }

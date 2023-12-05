@@ -106,7 +106,7 @@ export function generateVerifyEmailTemplate(verificationUrl: string) {
                   padding: 40px 20px 0px 20px; border-radius: 32px 32px 0px 0px;">
                                 <div style="display: block; border: 0px; padding: 30px 10px 30px 10px;" ></div>
                                 <p style="line-height: 30px;font-size: 24px; margin: 2; width: 450px;">THANKS FOR
-                                    SIGNING UP FOR <br>VP AIRLINES </p>
+                                    SIGNING UP FOR <br>PETCARE </p>
                             </td>
                         </tr>
                     </table>

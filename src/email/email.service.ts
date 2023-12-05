@@ -147,4 +147,19 @@ export class EmailService {
       `<p>We regret to inform you that the doctor ${payload.doctorName} has canceled the appointment ( ${payload.startTime} - ${payload.endTime}) due to reason: ${payload.reason}</p>`,
     );
   }
+  async sendMailRejectedToClient(
+    email: string,
+    payload: {
+      reason: string;
+      doctorName: string;
+      startTime: Date;
+      endTime: Date;
+    },
+  ) {
+    return this.sendMail(
+      email,
+      'Petcare: Doctor has rejected your appointment',
+      `<p>We regret to inform you that the doctor ${payload.doctorName} has rejected the appointment ( ${payload.startTime} - ${payload.endTime}) due to reason: ${payload.reason}</p>`,
+    );
+  }
 }

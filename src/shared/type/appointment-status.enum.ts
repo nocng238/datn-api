@@ -3,4 +3,5 @@ export enum AppointmentStatusEnum {
   APPROVED = 'APPROVED',
   CANCEL = 'CANCEL',
   FINISHED = 'FINISHED',
+  REJECTED = 'REJECTED',
 }

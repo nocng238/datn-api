@@ -71,6 +71,21 @@ export class AppointmentController {
     return this.appointmentService.finishAppointment(id);
   }
 
+  @Put('/reject/:id')
+  async rejectAppoinment(
+    @GetUser() user: Client | Doctor,
+    @Param('id') id: string,
+    @Body() cancelAppointmentDto: { reason: string },
+  ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    return this.appointmentService.rejectAppointment(
+      id,
+      cancelAppointmentDto.reason,
+    );
+  }
+
   @Get()
   async searchAppointments(
     @GetUser() user: Client | Doctor,

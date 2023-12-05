@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
@@ -67,6 +71,9 @@ export class AppointmentService {
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
     }
+    if (appointment.status !== AppointmentStatusEnum.PENDING) {
+      throw new BadRequestException('Only able to approve Pending appointment');
+    }
     await this.appointmentRepository.update(
       { id: appointment.id },
       { status: AppointmentStatusEnum.APPROVED },
@@ -102,6 +109,26 @@ export class AppointmentService {
         endTime: appointment.endTime,
       },
     );
+  }
+
+  async rejectAppointment(id: string, reason: string) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['client', 'doctor'],
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    await this.appointmentRepository.update(
+      { id: appointment.id },
+      { status: AppointmentStatusEnum.REJECTED },
+    );
+    await this.emailService.sendMailRejectedToClient(appointment.client.email, {
+      reason,
+      doctorName: appointment.doctor.fullname,
+      startTime: appointment.startTime,
+      endTime: appointment.endTime,
+    });
   }
 
   async finishAppointment(id: string) {

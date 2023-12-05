@@ -182,6 +182,7 @@ export class AppointmentService {
         );
       }
     }
+    queryBuilder.orderBy('app.start_time', 'ASC');
     queryBuilder.limit(limit).offset(offset);
     let items: Appointment[] = [];
     const [appointments, count] = await queryBuilder.getManyAndCount();

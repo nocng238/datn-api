@@ -17,9 +17,9 @@ import { DoctorModule } from './doctor/doctor.module';
 import { EmailModule } from './email/email.module';
 import { Favorite } from './favorite/favorite.entity';
 import { FavoriteModule } from './favorite/favorite.module';
+import { PaymentModule } from './payment/payment.module';
 import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
-import { StripeModule } from './stripe/stripe.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -68,7 +68,7 @@ import { UserModule } from './user/user.module';
     CreditCardModule,
     EmailModule,
     CloudinaryModule,
-    StripeModule,
+    PaymentModule,
   ],
 })
 export class AppModule {}

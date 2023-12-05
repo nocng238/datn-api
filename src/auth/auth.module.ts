@@ -6,7 +6,7 @@ import { Client } from 'src/client/client.entity';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { EmailModule } from 'src/email/email.module';
-import { StripeModule } from 'src/stripe/stripe.module';
+import { PaymentModule } from 'src/payment/payment.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -26,7 +26,7 @@ import { JwtStrategy } from './jwt.strategy';
       }),
     }),
     EmailModule,
-    StripeModule,
+    PaymentModule,
   ],
   controllers: [AuthController],
   providers: [JwtStrategy, AuthService],

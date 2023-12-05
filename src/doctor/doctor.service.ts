@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
 import { UpdateDoctorDto } from './dto/update.dto';
+
 @Injectable()
 export class DoctorService {
   constructor(
@@ -25,7 +26,10 @@ export class DoctorService {
   ) {
     const { search, address, endTime, startTime } = findDoctor;
     const { limit, offset } = paginationRequestdto;
-    const queryBuilder = this.doctorRepository.createQueryBuilder('doctor');
+    const queryBuilder = this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect('doctor.appointments', 'appointments')
+      .leftJoinAndSelect('appointments.review', 'review');
     if (search) {
       queryBuilder
         .where('doctor.email ilike :email', { email: `%${search}%` })
@@ -59,6 +63,20 @@ export class DoctorService {
     let items: Doctor[] = [];
     const [doctors, count] = await queryBuilder.getManyAndCount();
     items = items.concat(doctors);
+    items = items.map((item) => ({
+      ...item,
+      review: item.appointments.map((appointment) => ({
+        appointmentId: appointment.id,
+        review: appointment.review,
+      })),
+      averageRating:
+        item.appointments.reduce(
+          (total, next) => total + (next.review ? next.review.rating : 0),
+          0,
+        ) /
+        item.appointments.filter((appointment) => appointment.review !== null)
+          .length,
+    }));
     const meta = {
       totalItems: count,
       itemCount: items.length,

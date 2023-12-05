@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
-import StripeService from 'src/stripe/stripe.service';
+import StripeService from 'src/payment/stripe.service';
 import { Repository } from 'typeorm';
 import { ClientCreditCard } from './client-credit-card.entity';
 import { DoctorCreditCard } from './doctor-credit-card.entity';

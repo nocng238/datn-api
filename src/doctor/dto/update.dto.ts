@@ -16,7 +16,7 @@ export class UpdateDoctorDto {
   workplace?: string;
 
   @IsNumber()
-  feePerHour?: number;
+  feePerHour: number;
 
   @IsString()
   sex?: string;

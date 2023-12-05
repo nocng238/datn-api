@@ -2,7 +2,11 @@ import { IsOptional } from 'class-validator';
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import { Review } from 'src/review/review.entity';
-import { AppointmentStatusEnum, PaymentStatusEnum } from 'src/shared';
+import {
+  AppointmentStatusEnum,
+  PaymentMethodEnum,
+  PaymentStatusEnum,
+} from 'src/shared';
 import {
   Column,
   CreateDateColumn,
@@ -90,4 +94,12 @@ export class Appointment {
     name: 'payment_status',
   })
   paymentStatus: PaymentStatusEnum;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentMethodEnum,
+    name: 'payment_method',
+    nullable: true,
+  })
+  paymentMethod: PaymentMethodEnum;
 }

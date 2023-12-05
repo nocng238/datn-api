@@ -1,5 +1,7 @@
+import { Max, Min } from 'class-validator';
 import { Appointment } from 'src/appointment/appointment.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -27,4 +29,12 @@ export class Review {
     foreignKeyConstraintName: 'review_appointment_foreign_key',
   })
   appointment: Appointment;
+
+  @Column({ type: 'int' })
+  @Max(5)
+  @Min(1)
+  rating: number;
+
+  @Column({ nullable: true })
+  feedback: string;
 }

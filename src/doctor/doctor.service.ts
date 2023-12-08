@@ -29,6 +29,7 @@ export class DoctorService {
     const queryBuilder = this.doctorRepository
       .createQueryBuilder('doctor')
       .leftJoinAndSelect('doctor.appointments', 'appointments')
+      .leftJoinAndSelect('appointments.client', 'client')
       .leftJoinAndSelect('appointments.review', 'review');
     if (search) {
       queryBuilder
@@ -65,10 +66,13 @@ export class DoctorService {
     items = items.concat(doctors);
     items = items.map((item) => ({
       ...item,
-      review: item.appointments.map((appointment) => ({
-        appointmentId: appointment.id,
-        review: appointment.review,
-      })),
+      reviews: item.appointments
+        .filter((appointment) => appointment.reviewId)
+        .map((appointment) => ({
+          appointmentId: appointment.id,
+          review: appointment.review,
+          client: appointment.client,
+        })),
       averageRating:
         item.appointments.reduce(
           (total, next) => total + (next.review ? next.review.rating : 0),

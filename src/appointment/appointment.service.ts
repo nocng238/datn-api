@@ -56,10 +56,16 @@ export class AppointmentService {
       endTime: newAppointment.endTime,
       note: newAppointment.note,
     };
-    await this.emailService.sendEmailForDoctorHasANewAppointment(
-      doctor.email,
-      payloadEmail,
-    );
+    try {
+      await this.emailService.sendEmailForDoctorHasANewAppointment(
+        doctor.email,
+        payloadEmail,
+      );
+    } catch (err) {
+      console.error('Error sendEmailForDoctorHasANewAppointment ', {
+        cause: err,
+      });
+    }
     return newAppointment;
   }
 
@@ -78,14 +84,20 @@ export class AppointmentService {
       { id: appointment.id },
       { status: AppointmentStatusEnum.APPROVED },
     );
-    await this.emailService.sendEmailForClientIfDoctorApproveAppointment(
-      appointment.client.email,
-      {
-        doctorName: appointment.doctor.fullname,
-        endTime: appointment.endTime,
-        startTime: appointment.startTime,
-      },
-    );
+    try {
+      await this.emailService.sendEmailForClientIfDoctorApproveAppointment(
+        appointment.client.email,
+        {
+          doctorName: appointment.doctor.fullname,
+          endTime: appointment.endTime,
+          startTime: appointment.startTime,
+        },
+      );
+    } catch (err) {
+      console.error('Error sendEmailForClientIfDoctorApproveAppointment ', {
+        cause: err,
+      });
+    }
   }
 
   async cancelAppointment(id: string, reason: string) {
@@ -100,15 +112,21 @@ export class AppointmentService {
       { id: appointment.id },
       { status: AppointmentStatusEnum.CANCEL },
     );
-    await this.emailService.sendEmailForClientIfDoctorCancelAppointment(
-      appointment.client.email,
-      {
-        reason,
-        doctorName: appointment.doctor.fullname,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime,
-      },
-    );
+    try {
+      await this.emailService.sendEmailForClientIfDoctorCancelAppointment(
+        appointment.client.email,
+        {
+          reason,
+          doctorName: appointment.doctor.fullname,
+          startTime: appointment.startTime,
+          endTime: appointment.endTime,
+        },
+      );
+    } catch (err) {
+      console.error('Error sendEmailForClientIfDoctorCancelAppointment ', {
+        cause: err,
+      });
+    }
   }
 
   async rejectAppointment(id: string, reason: string) {
@@ -123,12 +141,21 @@ export class AppointmentService {
       { id: appointment.id },
       { status: AppointmentStatusEnum.REJECTED },
     );
-    await this.emailService.sendMailRejectedToClient(appointment.client.email, {
-      reason,
-      doctorName: appointment.doctor.fullname,
-      startTime: appointment.startTime,
-      endTime: appointment.endTime,
-    });
+    try {
+      await this.emailService.sendMailRejectedToClient(
+        appointment.client.email,
+        {
+          reason,
+          doctorName: appointment.doctor.fullname,
+          startTime: appointment.startTime,
+          endTime: appointment.endTime,
+        },
+      );
+    } catch (err) {
+      console.error('Error sendMailRejectedToClient ', {
+        cause: err,
+      });
+    }
   }
 
   async finishAppointment(id: string) {

@@ -59,7 +59,7 @@ export class PaymentService {
         throw new NotFoundException('Doctor have not had fee per hour value');
       }
       const { paymentMethodId } = clientMainCard;
-      const amount = feePerHour;
+      const amount = feePerHour * 100;
       // TODO: redefine:
       // - what is the unit of this property (since default unit in stripe is cent, if it is cent, do it have to * 100)?
       // - do it should be amount = feePerHour * dayjs(dayjs(appointment.endDate) - dayjs(appointment.startDate)).duration().asHours() ?

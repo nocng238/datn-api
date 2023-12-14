@@ -22,8 +22,8 @@ export class PaymentController {
     @Body() dto: CreatePaymentDto,
     @GetUser() user: Client | Doctor,
   ) {
-    if (!user.isDoctor) {
-      throw new ForbiddenException('Not allow client');
+    if (user.isDoctor) {
+      throw new ForbiddenException('Not allow doctor');
     }
     await this.paymentService.createPayment(dto);
   }

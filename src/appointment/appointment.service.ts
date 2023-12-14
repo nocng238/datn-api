@@ -201,6 +201,7 @@ export class AppointmentService {
       }
     } else {
       queryBuilder.leftJoinAndSelect('app.doctor', 'doctor');
+      // queryBuilder.leftJoinAndSelect('app.review', 'review');
       queryBuilder.where('app.client_id = :clientId', { clientId: user.id });
       if (search) {
         queryBuilder.andWhere(

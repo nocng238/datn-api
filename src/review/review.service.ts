@@ -43,4 +43,20 @@ export class ReviewService {
     await this.appointmentRepository.update({ id: appointmentId }, { review });
     return review;
   }
+
+  async getReviews(doctorId: string) {
+    const reviews = await this.reviewRepository.find({
+      relations: ['appointment', 'appointment.client'],
+      where: { appointment: { doctorId } },
+    });
+    return reviews.map((review) => {
+      return {
+        id: review.id,
+        rating: review.rating,
+        feedback: review.feedback,
+        createdAt: review.createdAt,
+        client: review.appointment.client,
+      };
+    });
+  }
 }

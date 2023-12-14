@@ -12,6 +12,7 @@ import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { Repository } from 'typeorm';
 import { Appointment } from './appointment.entity';
 import { CreateAppoitmentDto } from './dto/create.dto';
+import { MarkAbsentDto } from './dto/mark-absent.dto';
 import { SearchAppointmentDto } from './dto/search.dto';
 @Injectable()
 export class AppointmentService {
@@ -221,5 +222,40 @@ export class AppointmentService {
       offset: +offset,
     };
     return { items, meta };
+  }
+
+  async rejectApmarkAppoinmentAsAbsentointment(
+    id: string,
+    markAbsentDto: MarkAbsentDto,
+  ) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['client', 'doctor'],
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    if (appointment.startTime > markAbsentDto.currentTime) {
+      throw new BadRequestException(`It's not time yet`);
+    }
+    await this.appointmentRepository.update(
+      { id: appointment.id },
+      { status: AppointmentStatusEnum.ABSENT },
+    );
+  }
+
+  async getChart(doctorId: string, month: number) {
+    return this.appointmentRepository
+      .createQueryBuilder('appointment')
+      .where('appointment.doctor_id = :doctorId', {
+        doctorId,
+      })
+      .andWhere(
+        `to_char(appointment.start_time, 'MM') = :month OR to_char(appointment.end_time, 'MM') = :month`,
+        {
+          month,
+        },
+      )
+      .getCount();
   }
 }

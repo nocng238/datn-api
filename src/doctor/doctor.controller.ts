@@ -42,4 +42,13 @@ export class DoctorController {
     }
     return this.doctorService.uploadCV(user, file);
   }
+
+  @Get('/chart/revenue')
+  async getRevenueChart(@GetUser() user: Client | Doctor) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    const doctorId = user.id;
+    return this.doctorService.getRevenueChart(doctorId);
+  }
 }

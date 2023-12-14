@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
@@ -16,6 +17,7 @@ import { Doctor } from 'src/doctor/doctor.entity';
 import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { AppointmentService } from './appointment.service';
 import { CreateAppoitmentDto } from './dto/create.dto';
+import { MarkAbsentDto } from './dto/mark-absent.dto';
 import { SearchAppointmentDto } from './dto/search.dto';
 
 @Controller('appointment')
@@ -97,5 +99,35 @@ export class AppointmentController {
       searchAppointmentDto,
       paginationRequestdto,
     );
+  }
+
+  @Put('/absent/:id')
+  async markAppoinmentAsAbsent(
+    @GetUser() user: Client | Doctor,
+    @Param('id') id: string,
+    @Body() markAbsentDto: MarkAbsentDto,
+  ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    return this.appointmentService.rejectApmarkAppoinmentAsAbsentointment(
+      id,
+      markAbsentDto,
+    );
+  }
+
+  @Get('/chart/:month')
+  async getChart(
+    @GetUser() user: Client | Doctor,
+    @Param('month') month: number,
+  ) {
+    if (month < 1 || month > 12) {
+      throw new BadRequestException('Month must be >0 and <13');
+    }
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    const doctorId = user.id;
+    return this.appointmentService.getChart(doctorId, month);
   }
 }

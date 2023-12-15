@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from 'src/client/client.entity';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { AppointmentStatusEnum, PaymentStatusEnum } from 'src/shared';
 import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
@@ -32,11 +33,13 @@ export class DoctorService {
       .leftJoinAndSelect('appointments.client', 'client')
       .leftJoinAndSelect('appointments.review', 'review');
     if (search) {
-      queryBuilder
-        .where('doctor.email ilike :email', { email: `%${search}%` })
-        .orWhere('doctor.fullname ilike :fullname', {
+      queryBuilder.andWhere(
+        'doctor.email ilike :email OR doctor.fullname ilike :fullname',
+        {
+          email: `%${search}%`,
           fullname: `%${search}%`,
-        });
+        },
+      );
     }
     if (address) {
       queryBuilder.andWhere('doctor.address ilike :address', {
@@ -53,10 +56,14 @@ export class DoctorService {
             OR (appointment.start_time >= :startTime AND appointment.start_time < :endTime)
             OR (appointment.end_time > :startTime AND appointment.end_time <= :endTime)
           )
+          AND appointment.status != :cancel AND appointment.status != :rejected AND appointment.status != :finished
         )`,
         {
           startTime,
           endTime,
+          cancel: AppointmentStatusEnum.CANCEL,
+          rejected: AppointmentStatusEnum.REJECTED,
+          finished: AppointmentStatusEnum.FINISHED,
         },
       );
     }
@@ -110,5 +117,28 @@ export class DoctorService {
       });
     // await this.doctorRepository.update({ id: user.id }, { cv: uploadPDF.url });
     return uploadPDF.url;
+  }
+
+  async getRevenueChart(doctorId: string) {
+    const result = [];
+    const doctor = await this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect('doctor.appointments', 'appointments')
+      .where('doctor.id = :doctorId', { doctorId })
+      .getOne();
+    const { appointments } = doctor;
+    for (let i = 0; i < 12; i++) {
+      result.push({
+        month: i,
+        revenue:
+          appointments.filter(
+            (appointment) =>
+              new Date(appointment.startTime).getMonth() === i &&
+              appointment.paymentStatus === PaymentStatusEnum.PAID &&
+              appointment.status === AppointmentStatusEnum.FINISHED,
+          ).length * doctor.feePerHour,
+      });
+    }
+    return result;
   }
 }

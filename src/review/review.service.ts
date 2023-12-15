@@ -47,23 +47,19 @@ export class ReviewService {
     return review;
   }
 
-  async getReview(doctor: Doctor) {
-    const { id } = doctor;
-    const queryBuilder = this.reviewRepository
-      .createQueryBuilder('review')
-      .leftJoinAndSelect('appointment', 'ap', 'review.appointment_id = ap.id')
-      .leftJoinAndSelect('doctor', 'doctor', 'ap.doctor_id = doctor.id')
-      // .leftJoinAndSelect('client', 'client', 'ap.client_id = client.id')
-      .where('doctor.id = :id', { id });
-
-    // const queryBuilder = this.doctorRepository
-    //   .createQueryBuilder('doctor')
-    //   .leftJoin('doctor.appointments', 'appointments')
-    //   .innerJoinAndSelect('appointments.review', 'review')
-    //   .where('doctor.id = :id', { id });
-    const res = await queryBuilder.getMany();
-    console.log(res);
-
-    return res;
+  async getReviews(doctorId: string) {
+    const reviews = await this.reviewRepository.find({
+      relations: ['appointment', 'appointment.client'],
+      where: { appointment: { doctorId } },
+    });
+    return reviews.map((review) => {
+      return {
+        id: review.id,
+        rating: review.rating,
+        feedback: review.feedback,
+        createdAt: review.createdAt,
+        client: review.appointment.client,
+      };
+    });
   }
 }

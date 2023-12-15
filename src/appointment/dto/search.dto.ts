@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { AppointmentStatusEnum, PaymentStatusEnum } from 'src/shared';
 
 export class SearchAppointmentDto {
@@ -12,4 +12,10 @@ export class SearchAppointmentDto {
   @IsOptional()
   @IsEnum(PaymentStatusEnum)
   paymentStatus: PaymentStatusEnum;
+
+  @IsOptional()
+  @Min(1)
+  @Max(12)
+  @IsInt()
+  month: number;
 }

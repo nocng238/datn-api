@@ -67,12 +67,20 @@ export class EmailService {
       });
   }
 
-  async sendVerifyEmail(email: string, verificationUrl: string) {
+  async sendVerifyEmail(
+    email: string,
+    fullname: string,
+    verificationUrl: string,
+  ) {
     try {
       const sendMailResponse = await this.sendMail(
         email,
         'Petcare: Verify email',
-        generateVerifyEmailTemplate(verificationUrl),
+        generateVerifyEmailTemplate(
+          this.configService.get('LOGO_URL'),
+          fullname,
+          verificationUrl,
+        ),
       );
       console.log(sendMailResponse);
       console.log('Send email reset password successfully');

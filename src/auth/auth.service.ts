@@ -415,14 +415,14 @@ export class AuthService {
     if (user.isDoctor) {
       await this.doctorRepository.update(
         { id: user.id },
-        { avatar: uploadImage.url },
+        { avatar: uploadImage.secure_url },
       );
     } else {
       await this.clientRepository.update(
         { id: user.id },
-        { avatar: uploadImage.url },
+        { avatar: uploadImage.secure_url },
       );
     }
-    return uploadImage.url;
+    return uploadImage.secure_url;
   }
 }

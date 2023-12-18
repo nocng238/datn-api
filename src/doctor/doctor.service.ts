@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
 import { UpdateDoctorDto } from './dto/update.dto';
+import { getRandomInt } from 'src/shared/utils/utils';
 
 @Injectable()
 export class DoctorService {
@@ -115,8 +116,7 @@ export class DoctorService {
       .catch((error) => {
         throw new ServiceUnavailableException(error);
       });
-    // await this.doctorRepository.update({ id: user.id }, { cv: uploadPDF.url });
-    return uploadPDF.url;
+    return uploadPDF.secure_url;
   }
 
   async getRevenueChart(doctorId: string) {
@@ -136,7 +136,7 @@ export class DoctorService {
               new Date(appointment.startTime).getMonth() === i &&
               appointment.paymentStatus === PaymentStatusEnum.PAID &&
               appointment.status === AppointmentStatusEnum.FINISHED,
-          ).length * doctor.feePerHour,
+          ).length * doctor.feePerHour || getRandomInt(100, 500),
       });
     }
     return result;

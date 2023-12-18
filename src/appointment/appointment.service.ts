@@ -239,7 +239,7 @@ export class AppointmentService {
     if (appointment.startTime > markAbsentDto.currentTime) {
       throw new BadRequestException(`It's not time yet`);
     }
-    await this.appointmentRepository.update(
+    return this.appointmentRepository.update(
       { id: appointment.id },
       { status: AppointmentStatusEnum.ABSENT },
     );
@@ -266,7 +266,7 @@ export class AppointmentService {
     });
     return chart2;
   }
-  countByStatus(appointments) {
+  countByStatus(appointments: Appointment[]) {
     return appointments.reduce((counts, appointment) => {
       const key = appointment.status;
       if (!counts[key]) {

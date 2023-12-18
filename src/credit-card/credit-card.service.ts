@@ -89,7 +89,7 @@ export class CreditCardService {
             (dbCard) => dbCard.paymentMethodId === stripeCard.id,
           );
           if (dbCard) {
-            return { ...stripeCard, isMain: dbCard.isMain };
+            return { ...dbCard, stripeInfor: { ...stripeCard } };
           }
           return null;
         })

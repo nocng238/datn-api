@@ -16,11 +16,11 @@ export class DoctorCreditCard {
   })
   id: string;
 
-  @Column({ name: 'credit_number' })
-  creditNumber: string;
+  // @Column({ name: 'credit_number' })
+  // creditNumber: string;
 
-  @Column({ name: 'expired_time' })
-  expiredTime: Date;
+  // @Column({ name: 'expired_time' })
+  // expiredTime: Date;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

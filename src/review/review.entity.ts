@@ -1,6 +1,7 @@
 import { Max, Min } from 'class-validator';
 import { Appointment } from 'src/appointment/appointment.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity('review')
-export class Review {
+export class Review extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'review_primary_key',
   })

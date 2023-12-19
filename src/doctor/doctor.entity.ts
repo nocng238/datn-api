@@ -4,6 +4,7 @@ import { DoctorAvailableTime } from 'src/doctor-available-time/doctor-available-
 import { Favorite } from 'src/favorite/favorite.entity';
 import { StatusEnum } from 'src/shared';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -15,7 +16,7 @@ import {
 } from 'typeorm';
 
 @Entity('doctor')
-export class Doctor {
+export class Doctor extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'doctor_primary_key',
   })

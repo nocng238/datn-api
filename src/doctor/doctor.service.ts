@@ -68,7 +68,7 @@ export class DoctorService {
       );
     }
     queryBuilder.limit(limit).offset(offset);
-    let items: Doctor[] = [];
+    let items = [];
     const [doctors, count] = await queryBuilder.getManyAndCount();
     items = items.concat(doctors);
     items = items.map((item) => ({

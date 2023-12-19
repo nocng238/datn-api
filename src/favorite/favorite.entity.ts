@@ -1,6 +1,7 @@
 import { Client } from 'src/client/client.entity';
 import { Doctor } from 'src/doctor/doctor.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -11,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity('favorite')
-export class Favorite {
+export class Favorite extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'favorite_primary_key',
   })

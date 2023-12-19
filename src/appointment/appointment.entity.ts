@@ -8,6 +8,7 @@ import {
   PaymentStatusEnum,
 } from 'src/shared';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -19,7 +20,7 @@ import {
 } from 'typeorm';
 
 @Entity('appointment')
-export class Appointment {
+export class Appointment extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'appoinment_primary_key',
   })

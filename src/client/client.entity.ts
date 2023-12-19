@@ -3,6 +3,7 @@ import { ClientCreditCard } from 'src/credit-card/client-credit-card.entity';
 import { Favorite } from 'src/favorite/favorite.entity';
 import { StatusEnum } from 'src/shared';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -12,7 +13,7 @@ import {
 } from 'typeorm';
 
 @Entity('client')
-export class Client {
+export class Client extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'client_primary_key',
   })

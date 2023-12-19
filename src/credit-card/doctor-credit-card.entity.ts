@@ -1,5 +1,6 @@
 import { Doctor } from 'src/doctor/doctor.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -10,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity('doctor_credit_card')
-export class DoctorCreditCard {
+export class DoctorCreditCard extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'doctor_credit_card_primary_key',
   })

@@ -1,7 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 
 const imageFileFilter = (req, file, callback) => {
-  if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|jpe|heic)$/)) {
+  if (
+    !file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|jpe|heic|svg)$/)
+  ) {
     return callback(
       new BadRequestException('Only image types are allowed'),
       false,
@@ -24,3 +26,9 @@ export const pdfUploadOptions = {
   },
   limits: { fileSize: 100 * 1024 * 1024 },
 };
+
+export function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

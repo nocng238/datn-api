@@ -22,7 +22,6 @@ export class ReviewController {
   async createReview(@Body() createReviewDto: CreateReviewDto) {
     return this.reviewService.createReview(createReviewDto);
   }
-
   @Get()
   async getReviews(@GetUser() user: Client | Doctor) {
     if (!user.isDoctor) {

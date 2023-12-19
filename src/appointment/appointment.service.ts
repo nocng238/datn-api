@@ -202,6 +202,7 @@ export class AppointmentService {
       }
     } else {
       queryBuilder.leftJoinAndSelect('app.doctor', 'doctor');
+      // queryBuilder.leftJoinAndSelect('app.review', 'review');
       queryBuilder.where('app.client_id = :clientId', { clientId: user.id });
       if (search) {
         queryBuilder.andWhere(
@@ -238,14 +239,14 @@ export class AppointmentService {
     if (appointment.startTime > markAbsentDto.currentTime) {
       throw new BadRequestException(`It's not time yet`);
     }
-    await this.appointmentRepository.update(
+    return this.appointmentRepository.update(
       { id: appointment.id },
       { status: AppointmentStatusEnum.ABSENT },
     );
   }
 
   async getChart(doctorId: string, month: number) {
-    return this.appointmentRepository
+    const data = await this.appointmentRepository
       .createQueryBuilder('appointment')
       .where('appointment.doctor_id = :doctorId', {
         doctorId,
@@ -256,6 +257,23 @@ export class AppointmentService {
           month,
         },
       )
-      .getCount();
+      .getMany();
+    const chartData = this.countByStatus(data);
+    const keys = Object.keys(AppointmentStatusEnum);
+    const chart2 = [];
+    keys.forEach((key) => {
+      chart2.push(chartData[key] || 0);
+    });
+    return chart2;
+  }
+  countByStatus(appointments: Appointment[]) {
+    return appointments.reduce((counts, appointment) => {
+      const key = appointment.status;
+      if (!counts[key]) {
+        counts[key] = 0;
+      }
+      counts[key]++;
+      return counts;
+    }, {});
   }
 }

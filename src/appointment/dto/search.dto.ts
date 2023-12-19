@@ -13,6 +13,7 @@ export class SearchAppointmentDto {
   @IsEnum(PaymentStatusEnum)
   paymentStatus: PaymentStatusEnum;
 
+  @IsOptional()
   @Min(1)
   @Max(12)
   @IsInt()

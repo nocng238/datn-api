@@ -120,7 +120,11 @@ export class AuthService {
     const verificationUrl = await this.sendVerificationLink(token, email);
     const expiredTime = dayjs(user.sentEmailVerifyAt).add(1, 'm');
     if (!user.sentEmailVerifyAt || dayjs().isAfter(expiredTime)) {
-      this.emailService.sendVerifyEmail(user.email, verificationUrl);
+      this.emailService.sendVerifyEmail(
+        user.email,
+        user.fullname,
+        verificationUrl,
+      );
       user.sentEmailVerifyAt = new Date();
     }
 
@@ -168,7 +172,11 @@ export class AuthService {
     const verificationUrl = await this.sendVerificationLink(token, email);
     const expiredTime = dayjs(user.sentEmailVerifyAt).add(1, 'm');
     if (!user.sentEmailVerifyAt || dayjs().isAfter(expiredTime)) {
-      this.emailService.sendVerifyEmail(user.email, verificationUrl);
+      this.emailService.sendVerifyEmail(
+        user.email,
+        user.fullname,
+        verificationUrl,
+      );
       user.sentEmailVerifyAt = new Date();
     }
 
@@ -407,14 +415,14 @@ export class AuthService {
     if (user.isDoctor) {
       await this.doctorRepository.update(
         { id: user.id },
-        { avatar: uploadImage.url },
+        { avatar: uploadImage.secure_url },
       );
     } else {
       await this.clientRepository.update(
         { id: user.id },
-        { avatar: uploadImage.url },
+        { avatar: uploadImage.secure_url },
       );
     }
-    return uploadImage.url;
+    return uploadImage.secure_url;
   }
 }

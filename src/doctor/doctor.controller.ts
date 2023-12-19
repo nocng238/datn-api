@@ -19,7 +19,6 @@ import { DoctorService } from './doctor.service';
 import { FindDoctor } from './dto/find.dto';
 
 @Controller('doctor')
-@UseGuards(JwtAuthGuard)
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
@@ -33,6 +32,7 @@ export class DoctorController {
 
   @Post('upload-cv')
   @UseInterceptors(FileInterceptor('file', pdfUploadOptions))
+  @UseGuards(JwtAuthGuard)
   async uploadCV(
     @GetUser() user: Client | Doctor,
     @UploadedFile() file: Express.Multer.File,
@@ -44,6 +44,7 @@ export class DoctorController {
   }
 
   @Get('/chart/revenue')
+  @UseGuards(JwtAuthGuard)
   async getRevenueChart(@GetUser() user: Client | Doctor) {
     if (!user.isDoctor) {
       throw new ForbiddenException('Not allow client');

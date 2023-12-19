@@ -33,5 +33,6 @@ async function bootstrap() {
   await setupAdminPanel(app);
   await app.listen(port);
   console.log(`App starting on port ${port}`);
+  console.log(`Admin page starting at endpoint /admin`);
 }
 void bootstrap();

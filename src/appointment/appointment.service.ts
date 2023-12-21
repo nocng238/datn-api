@@ -12,6 +12,7 @@ import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { Repository } from 'typeorm';
 import { Appointment } from './appointment.entity';
 import { CreateAppoitmentDto } from './dto/create.dto';
+import { CreateDoctorNote } from './dto/doctor-note.dto';
 import { MarkAbsentDto } from './dto/mark-absent.dto';
 import { SearchAppointmentDto } from './dto/search.dto';
 @Injectable()
@@ -83,7 +84,7 @@ export class AppointmentService {
     }
     await this.appointmentRepository.update(
       { id: appointment.id },
-      { status: AppointmentStatusEnum.APPROVED },
+      { status: AppointmentStatusEnum.APPROVED, statusUpdatedAt: new Date() },
     );
     try {
       await this.emailService.sendEmailForClientIfDoctorApproveAppointment(
@@ -111,7 +112,7 @@ export class AppointmentService {
     }
     await this.appointmentRepository.update(
       { id: appointment.id },
-      { status: AppointmentStatusEnum.CANCEL },
+      { status: AppointmentStatusEnum.CANCEL, statusUpdatedAt: new Date() },
     );
     try {
       await this.emailService.sendEmailForClientIfDoctorCancelAppointment(
@@ -140,7 +141,7 @@ export class AppointmentService {
     }
     await this.appointmentRepository.update(
       { id: appointment.id },
-      { status: AppointmentStatusEnum.REJECTED },
+      { status: AppointmentStatusEnum.REJECTED, statusUpdatedAt: new Date() },
     );
     try {
       await this.emailService.sendMailRejectedToClient(
@@ -169,7 +170,7 @@ export class AppointmentService {
     }
     await this.appointmentRepository.update(
       { id: appointment.id },
-      { status: AppointmentStatusEnum.FINISHED },
+      { status: AppointmentStatusEnum.FINISHED, statusUpdatedAt: new Date() },
     );
   }
 
@@ -241,7 +242,7 @@ export class AppointmentService {
     }
     return this.appointmentRepository.update(
       { id: appointment.id },
-      { status: AppointmentStatusEnum.ABSENT },
+      { status: AppointmentStatusEnum.ABSENT, statusUpdatedAt: new Date() },
     );
   }
 
@@ -275,5 +276,19 @@ export class AppointmentService {
       counts[key]++;
       return counts;
     }, {});
+  }
+
+  async createDoctorNote(id: string, createDoctorNote: CreateDoctorNote) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id },
+    });
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    const { note } = createDoctorNote;
+    await this.appointmentRepository.update(
+      { id: appointment.id },
+      { doctorNote: note, doctorNoteUpdatedAt: new Date() },
+    );
   }
 }

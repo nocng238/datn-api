@@ -17,6 +17,7 @@ import { Doctor } from 'src/doctor/doctor.entity';
 import { PaginationRequestDto } from 'src/shared/dto/pagination.request.dto';
 import { AppointmentService } from './appointment.service';
 import { CreateAppoitmentDto } from './dto/create.dto';
+import { CreateDoctorNote } from './dto/doctor-note.dto';
 import { MarkAbsentDto } from './dto/mark-absent.dto';
 import { SearchAppointmentDto } from './dto/search.dto';
 
@@ -129,5 +130,17 @@ export class AppointmentController {
     }
     const doctorId = user.id;
     return this.appointmentService.getChart(doctorId, month);
+  }
+
+  @Put('/doctor-note/:id') // TODO: have not tested yet
+  async createDoctorNote(
+    @GetUser() user: Client | Doctor,
+    @Param('id') id: string,
+    @Body() createDoctorNote: CreateDoctorNote,
+  ) {
+    if (!user.isDoctor) {
+      throw new ForbiddenException('Not allow client');
+    }
+    return this.appointmentService.createDoctorNote(id, createDoctorNote);
   }
 }

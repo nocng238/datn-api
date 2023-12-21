@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import AdminBro from 'admin-bro';
+import AdminBro, { ResourceWithOptions } from 'admin-bro';
 import * as AdminBroExpress from 'admin-bro-expressjs';
 import { Database, Resource } from 'admin-bro-typeorm';
 import { Appointment } from './appointment/appointment.entity';
@@ -13,10 +13,31 @@ import { Review } from './review/review.entity';
 
 export async function setupAdminPanel(app: INestApplication): Promise<void> {
   AdminBro.registerAdapter({ Database, Resource });
-  /** Create adminBro instance */
+
+  const AppointmentResource: ResourceWithOptions = {
+    resource: Appointment,
+    options: {
+      // properties: {
+      //   airBrandId: { isVisible: { show: true, filter: true, edit: false } },
+      // },
+      listProperties: [
+        'id',
+        'status',
+        'startTime',
+        'endTime',
+        'doctor',
+        'doctor.name',
+        'clientId',
+        'paymentStatus',
+        'paymentMethod',
+      ],
+      actions: {},
+    },
+  };
+
   const adminBro = new AdminBro({
     resources: [
-      Appointment,
+      AppointmentResource,
       Doctor,
       Client,
       DoctorAvailableTime,
@@ -24,13 +45,11 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
       Review,
       ClientCreditCard,
       DoctorCreditCard,
-    ], // Here we will put resources
-    rootPath: '/admin', // Define path for the admin panel
+    ],
+    rootPath: '/admin',
   });
 
-  /** Create router */
   const router = AdminBroExpress.buildRouter(adminBro);
 
-  /** Bind routing */
   app.use(adminBro.options.rootPath, router);
 }

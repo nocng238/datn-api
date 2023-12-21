@@ -103,4 +103,17 @@ export class Appointment extends BaseEntity {
     nullable: true,
   })
   paymentMethod: PaymentMethodEnum;
+
+  @Column({ nullable: true, name: 'doctor_note' })
+  doctorNote: string;
+
+  @Column({
+    nullable: true,
+    name: 'doctor_note_updated_at',
+    type: 'timestamptz',
+  })
+  doctorNoteUpdatedAt: Date;
+
+  @Column({ nullable: true, name: 'status_updated_at', type: 'timestamptz' })
+  statusUpdatedAt: Date;
 }

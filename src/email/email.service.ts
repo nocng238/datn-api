@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
 import {
   generateResetPasswordTemplate,
+  generateResetPasswordTemplate2,
   generateVerifyEmailTemplate,
 } from './templates';
 
@@ -14,7 +15,7 @@ export class EmailService {
     private configService: ConfigService,
   ) {}
   private readonly logger = new Logger(EmailService.name);
-
+  private readonly logo = this.configService.get('LOGO_URL');
   private async setTransport() {
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
@@ -93,7 +94,7 @@ export class EmailService {
     return this.sendMail(
       email,
       'Petcare: Reset password',
-      generateResetPasswordTemplate(name, code),
+      generateResetPasswordTemplate2(this.logo, name, code),
     );
   }
 

@@ -55,13 +55,13 @@ export class AuthService {
     } else if (doctor) {
       user = doctor;
     } else {
-      throw new UnauthorizedException('User not found');
+      throw new BadRequestException('User not found');
     }
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new BadRequestException('Email or password is incorrect');
     }
     if (user.status === StatusEnum.NOT_VERIFY) {
-      throw new UnauthorizedException('Email is not verified');
+      throw new BadRequestException('Email is not verified');
     }
     const payload: JwtPayload = {
       email,

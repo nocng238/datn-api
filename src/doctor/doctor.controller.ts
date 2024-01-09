@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -17,6 +19,7 @@ import { pdfUploadOptions } from 'src/shared/utils/utils';
 import { Doctor } from './doctor.entity';
 import { DoctorService } from './doctor.service';
 import { FindDoctor } from './dto/find.dto';
+import { CheckDoctorFree } from './dto/check-free.dto';
 
 @Controller('doctor')
 export class DoctorController {
@@ -51,5 +54,14 @@ export class DoctorController {
     }
     const doctorId = user.id;
     return this.doctorService.getRevenueChart(doctorId);
+  }
+
+  @Post('/is-doctor-free/:doctorId')
+  // @UseGuards(JwtAuthGuard)
+  async checkIfIsDoctorFree(
+    @Param('doctorId') doctorId: string,
+    @Body() checkDoctorFree: CheckDoctorFree,
+  ) {
+    return this.doctorService.checkIfIsDoctorFree(doctorId, checkDoctorFree);
   }
 }

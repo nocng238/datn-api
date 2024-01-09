@@ -13,6 +13,7 @@ import { Doctor } from './doctor.entity';
 import { FindDoctor } from './dto/find.dto';
 import { UpdateDoctorDto } from './dto/update.dto';
 import { getRandomInt } from 'src/shared/utils/utils';
+import { CheckDoctorFree } from './dto/check-free.dto';
 
 @Injectable()
 export class DoctorService {
@@ -140,5 +141,35 @@ export class DoctorService {
       });
     }
     return result;
+  }
+
+  async checkIfIsDoctorFree(id: string, checkDoctorFree: CheckDoctorFree) {
+    const { startTime, endTime } = checkDoctorFree;
+    const doctor = await this.doctorRepository
+      .createQueryBuilder('doctor')
+      .leftJoinAndSelect('doctor.appointments', 'appointments')
+      .where('doctor.id = :id', { id })
+      .andWhere(
+        `NOT EXISTS (select from appointment where appointment.doctor_id = doctor.id 
+          AND (
+            (appointment.start_time <= :startTime AND appointment.end_time >= :endTime ) 
+            OR (appointment.start_time >= :startTime AND appointment.start_time < :endTime)
+            OR (appointment.end_time > :startTime AND appointment.end_time <= :endTime)
+          )
+          AND appointment.status != :cancel AND appointment.status != :rejected AND appointment.status != :finished
+        )`,
+        {
+          startTime,
+          endTime,
+          cancel: AppointmentStatusEnum.CANCEL,
+          rejected: AppointmentStatusEnum.REJECTED,
+          finished: AppointmentStatusEnum.FINISHED,
+        },
+      )
+      .getOne();
+    if (doctor) {
+      return true;
+    }
+    return false;
   }
 }

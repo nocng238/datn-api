@@ -10,6 +10,7 @@ import { PaymentModule } from 'src/payment/payment.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { ImageModule } from 'src/image/image.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
     EmailModule,
     PaymentModule,
+    ImageModule,
   ],
   controllers: [AuthController],
   providers: [JwtStrategy, AuthService],

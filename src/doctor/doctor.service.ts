@@ -110,7 +110,7 @@ export class DoctorService {
 
   async uploadCV(user: Client | Doctor, file: Express.Multer.File) {
     const uploadPDF = await this.cloudinary
-      .uploadFile(file)
+      .uploadFile(file.buffer)
       .then((data) => {
         return data;
       })

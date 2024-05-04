@@ -28,7 +28,8 @@ import { ForgetPasswordRequestDto } from './dto/forget-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailRequestParamDto } from './dto/token-request-param.dto';
 import { JwtPayload } from './jwt.payload';
-
+import * as sharp from 'sharp';
+import { ImageService } from 'src/image/image.service';
 @Injectable()
 export class AuthService {
   constructor(
@@ -41,6 +42,7 @@ export class AuthService {
     private emailService: EmailService,
     private cloudinary: CloudinaryService,
     private stripeService: StripeService,
+    private imageService: ImageService,
   ) {}
 
   async login(credentials: Credentials) {
@@ -403,8 +405,13 @@ export class AuthService {
   }
 
   async uploadAvatar(user: Client | Doctor, file: Express.Multer.File) {
+    const resizedImage = await this.imageService.resizeImage(
+      file.buffer,
+      215,
+      215,
+    );
     const uploadImage = await this.cloudinary
-      .uploadFile(file)
+      .uploadFile(resizedImage)
       .then((data) => {
         return data;
       })

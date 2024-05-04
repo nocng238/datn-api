@@ -21,6 +21,7 @@ import { PaymentModule } from './payment/payment.module';
 import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
 import { UserModule } from './user/user.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { UserModule } from './user/user.module';
     EmailModule,
     CloudinaryModule,
     PaymentModule,
+    ImageModule,
   ],
 })
 export class AppModule {}

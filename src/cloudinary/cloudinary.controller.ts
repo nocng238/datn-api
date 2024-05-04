@@ -18,7 +18,7 @@ export class ClientController {
   @UseInterceptors(FileInterceptor('file', imageUploadOptions))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return {
-      url: (await this.cloudinaryService.uploadFile(file)).secure_url,
+      url: (await this.cloudinaryService.uploadFile(file.buffer)).secure_url,
     };
   }
 }

@@ -22,6 +22,19 @@ import { Review } from './review/review.entity';
 import { ReviewModule } from './review/review.module';
 import { UserModule } from './user/user.module';
 import { ImageModule } from './image/image.module';
+import { dynamicImport } from './shared/utils/utils';
+
+const DEFAULT_ADMIN = {
+  email: 'admin@example.com',
+  password: 'password',
+};
+
+const authenticate = async (email: string, password: string) => {
+  if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+    return Promise.resolve(DEFAULT_ADMIN);
+  }
+  return null;
+};
 
 @Module({
   imports: [
@@ -54,10 +67,39 @@ import { ImageModule } from './image/image.module';
             'DB_PORT',
           )}/${configService.get('DB_DATABASE')}`,
           keepConnectionAlive: true,
-          logging: true,
+          logging: false,
         };
       },
     }),
+    dynamicImport('@adminjs/nestjs').then(({ AdminModule }) =>
+      AdminModule.createAdminAsync({
+        useFactory: () => ({
+          adminJsOptions: {
+            rootPath: '/admin',
+            resources: [
+              Appointment,
+              Doctor,
+              Client,
+              DoctorAvailableTime,
+              Favorite,
+              Review,
+              ClientCreditCard,
+              DoctorCreditCard,
+            ],
+          },
+          auth: {
+            authenticate,
+            cookieName: 'adminjs',
+            cookiePassword: 'secret',
+          },
+          sessionOptions: {
+            resave: true,
+            saveUninitialized: true,
+            secret: 'secret',
+          },
+        }),
+      }),
+    ),
     ClientModule,
     DoctorModule,
     AppointmentModule,

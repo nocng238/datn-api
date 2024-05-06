@@ -34,7 +34,10 @@ export class AppointmentController {
     if (user.isDoctor) {
       throw new ForbiddenException('Not allow doctor');
     }
-    return this.appointmentService.createAppoitment(user, createAppointmentDto);
+    return this.appointmentService.createAppointment(
+      user,
+      createAppointmentDto,
+    );
   }
 
   @Put('/approve/:id')

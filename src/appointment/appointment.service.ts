@@ -25,7 +25,7 @@ export class AppointmentService {
     private readonly emailService: EmailService,
   ) {}
 
-  async createAppoitment(
+  async createAppointment(
     client: Client | Doctor,
     createAppointmentDto: CreateAppoitmentDto,
   ): Promise<Appointment> {

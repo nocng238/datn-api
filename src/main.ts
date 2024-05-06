@@ -7,7 +7,9 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
-import { setupAdminPanel } from './setup-admin';
+import { dynamicImport } from './shared/utils/utils';
+import AdminJS from 'adminjs';
+// import { setupAdminPanel } from './setup-admin';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -26,11 +28,17 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-
+  const adminJSModule = await dynamicImport('adminjs');
+  const AdminJS = adminJSModule.default;
+  const AdminJSTypeorm = await dynamicImport('@adminjs/typeorm');
+  AdminJS.registerAdapter({
+    Resource: AdminJSTypeorm.Resource,
+    Database: AdminJSTypeorm.Database,
+  });
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
   const port = process.env.PORT;
-  await setupAdminPanel(app);
+  // await setupAdminPanel(app);
   await app.listen(port);
   console.log(`App starting on port ${port}`);
   console.log(`Admin page starting at endpoint /admin`);
